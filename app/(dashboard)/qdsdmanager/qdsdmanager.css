@@ -1,0 +1,71 @@
+:root {
+  --input-width: 360px;
+  --input-font-size: 14px;
+  --input-pad-x: 14px;
+  --input-pad-y: 10px;
+  --input-radius: 8px;
+  --input-bg: #ffffff;
+  --input-color: #111827;
+  --input-placeholder: #9ca3af;
+  --input-border: 1px solid #d1d5db;
+  --input-focus-color: #3b82f6;
+  --input-focus-ring: 2px;
+}
+
+.ag-row-odd {
+  background-color: #dcdcdc;
+}
+.ag-row-even {
+  background-color: #ffffff;
+}
+/* Styles */
+.input-wrapper {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+
+.select {
+  font-family: inherit;
+  font-size: var(--input-font-size);
+  padding: var(--input-pad-y) var(--input-pad-x);
+  border-radius: var(--input-radius);
+  background: var(--input-bg);
+  color: var(--input-color);
+  border: var(--input-border);
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  width: 300px;
+}
+
+.custom-input {
+  width: var(--input-width);
+  /* width: 100%; */
+  font-family: inherit;
+  font-size: var(--input-font-size);
+  padding: var(--input-pad-y) var(--input-pad-x);
+  border-radius: var(--input-radius);
+  background: var(--input-bg);
+  color: var(--input-color);
+  border: var(--input-border);
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.custom-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.custom-input:focus {
+  border-color: var(--input-focus-color);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
+}
+.view-action {
+  color: blue;
+  cursor: pointer;
+  font-size: 17px;
+}

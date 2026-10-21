@@ -1,0 +1,30 @@
+.tab-div {
+  display: flex;
+  border-bottom: 1px solid #d1d5db;
+  gap: 8px;
+}
+
+.tab-button {
+  padding: 10px 16px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.tab-button.active {
+  color: #0070f3;
+  border-bottom-color: #0070f3;
+  font-weight: 600;
+}
+
+.tab-panel {
+  padding: 20px;
+  margin-top: 10px;
+  background: #f9fafb;
+  border-radius: 6px;
+  overflow: scroll;
+  height: calc(100vh - 260px);
+}
