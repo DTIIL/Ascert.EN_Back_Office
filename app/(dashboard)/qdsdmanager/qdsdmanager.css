@@ -12,12 +12,6 @@
   --input-focus-ring: 2px;
 }
 
-.ag-row-odd {
-  background-color: #dcdcdc;
-}
-.ag-row-even {
-  background-color: #ffffff;
-}
 /* Styles */
 .input-wrapper {
   display: flex;
@@ -42,7 +36,6 @@
 
 .custom-input {
   width: var(--input-width);
-  /* width: 100%; */
   font-family: inherit;
   font-size: var(--input-font-size);
   padding: var(--input-pad-y) var(--input-pad-x);

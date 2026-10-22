@@ -31,3 +31,19 @@ export const StatusRenderer = ({ value }) => {
     </span>
   );
 };
+export const EditUserRenderer = (params) => {
+  return (
+    <span
+      onClick={() => params.onEdit?.(params.data)}
+      style={{
+        padding: "3px 7px",
+        borderRadius: "4px",
+        fontSize: "14px",
+        color: "blue",
+        cursor: "pointer",
+      }}
+    >
+      Edit
+    </span>
+  );
+};
