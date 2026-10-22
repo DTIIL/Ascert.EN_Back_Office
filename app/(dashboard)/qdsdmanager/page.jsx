@@ -128,7 +128,7 @@ const Page = () => {
         </select>
       </div>
 
-      <div style={{ height: "calc(100vh - 260px)", width: "100%" }}>
+      <div className="ag-grid">
         <AgGridReact
           rowData={filteredData}
           columnDefs={columnDefs}
