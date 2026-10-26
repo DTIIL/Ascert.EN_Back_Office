@@ -5,11 +5,9 @@ import {
   Download,
   FileSliders,
   FileText,
-  NotebookPen,
   PencilLine,
   ShieldAlert,
   Smartphone,
-  User,
 } from "lucide-react";
 
 const reportSection = [
@@ -30,18 +28,6 @@ const reportSection = [
     title: "Device Report",
     body: "View device and secure element details",
     path: "/report/device-report",
-  },
-  {
-    image: User,
-    title: "User Report",
-    body: "View user details and QDSD assignments",
-    path: "/report/user-report",
-  },
-  {
-    image: NotebookPen,
-    title: "Audit Report",
-    body: "View all system activities and changes",
-    path: "/report/audit-report",
   },
   {
     image: ShieldAlert,
