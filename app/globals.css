@@ -137,3 +137,8 @@ body {
 .ag-row-even {
   background-color: #ffffff;
 }
+.input-wrapper {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}

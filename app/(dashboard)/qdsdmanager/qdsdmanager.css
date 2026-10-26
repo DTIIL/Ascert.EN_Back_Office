@@ -12,13 +12,6 @@
   --input-focus-ring: 2px;
 }
 
-/* Styles */
-.input-wrapper {
-  display: flex;
-  gap: 20px;
-  position: relative;
-}
-
 .select {
   font-family: inherit;
   font-size: var(--input-font-size);

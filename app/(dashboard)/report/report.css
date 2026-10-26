@@ -23,3 +23,11 @@
   border: 1px solid #eef2f7;
   cursor: pointer;
 }
+.breadcrumb {
+  color: blue;
+  cursor: pointer;
+}
+.section-container {
+  display: grid;
+  gap: 10px;
+}
