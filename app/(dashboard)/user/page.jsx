@@ -1,20 +1,14 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import "./user.css";
-import { AgGridReact } from "ag-grid-react";
+
 import { useCallback, useMemo, useState } from "react";
-import {
-  themeQuartz,
-  AllCommunityModule,
-  ModuleRegistry,
-} from "ag-grid-community";
+import DataGrid from "../../../components/DataGrid";
 import AddUser from "./AddUser";
 import { dummyUsers } from "../../../public/data";
-import { EditUserRenderer } from "../../../public/utils";
+import { EditUserRenderer, StatusRenderer } from "../../../public/utils";
+import { filterRows } from "../../../lib/filterRows";
+import "./user.css";
 
-ModuleRegistry.registerModules([AllCommunityModule]);
-
-const page = () => {
+export default function Page() {
   const [inputSearch, setInputSearch] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const [userData, setUserData] = useState(() =>
@@ -46,15 +40,17 @@ const page = () => {
     );
     setEditingUser(null);
   };
+
   const columnDefs = useMemo(
     () => [
-      { field: "fullName" },
-      { field: "email" },
-      { field: "mobile" },
-      { field: "role" },
-      { field: "status" },
+      { field: "fullName", headerName: "Full Name" },
+      { field: "email", headerName: "Email" },
+      { field: "mobile", headerName: "Mobile" },
+      { field: "role", headerName: "Role" },
+      { field: "status", headerName: "Status", cellRenderer: StatusRenderer },
       {
         headerName: "Action",
+        sortable: false,
         cellRenderer: EditUserRenderer,
         cellRendererParams: {
           onEdit: handleEditUser,
@@ -64,30 +60,10 @@ const page = () => {
     [handleEditUser],
   );
 
-  const defaultColDef = useMemo(
-    () => ({
-      flex: 1,
-      minWidth: 100,
-      sortable: true,
-    }),
-    [],
+  const filteredData = useMemo(
+    () => filterRows(userData, inputSearch),
+    [inputSearch, userData],
   );
-
-  const filteredData = useMemo(() => {
-    const query = inputSearch.trim().toLowerCase();
-
-    return userData.filter((row) => {
-      const matchesSearch =
-        !query ||
-        Object.values(row).some((value) =>
-          String(value ?? "")
-            .toLowerCase()
-            .includes(query),
-        );
-
-      return matchesSearch;
-    });
-  }, [inputSearch, userData]);
 
   const handleVisibleClick = () => {
     if (isVisible && !editingUser) {
@@ -100,7 +76,7 @@ const page = () => {
   };
 
   return (
-    <section className="grid gap-10">
+    <section className="section-container">
       {isVisible && (
         <AddUser
           key={editingUser?.id ?? "new"}
@@ -113,39 +89,30 @@ const page = () => {
 
       <div className="header-component">
         <div>
-          <h2>User</h2>
-          <span>Manage users,roles and access</span>
+          <h1>Users</h1>
+          <p className="page-subtitle">Manage people, roles, and access.</p>
         </div>
-        <div>
-          <button className="button-9" onClick={handleVisibleClick}>
-            + Add User
-          </button>
-        </div>
+        <button className="btn btn-primary" type="button" onClick={handleVisibleClick}>
+          {isVisible && !editingUser ? "Close" : "Add user"}
+        </button>
       </div>
-      <div className="input-wrapper">
+
+      <div className="toolbar">
         <input
           className="custom-input"
           type="search"
-          placeholder="Search users,roles and access"
+          placeholder="Search by name, email, or role"
           value={inputSearch}
-          onChange={(e) => setInputSearch(e.target.value)}
-          aria-label="Search QDSD records"
+          onChange={(event) => setInputSearch(event.target.value)}
+          aria-label="Search users"
         />
       </div>
 
-      <div className="ag-grid">
-        <AgGridReact
-          rowData={filteredData}
-          columnDefs={columnDefs}
-          defaultColDef={defaultColDef}
-          theme={themeQuartz}
-          pagination={true}
-          // onRowClicked={handleEditUser}
-          getRowId={(params) => String(params.data.id)}
-        />
-      </div>
+      <DataGrid
+        rowData={filteredData}
+        columnDefs={columnDefs}
+        getRowId={(params) => String(params.data.id)}
+      />
     </section>
   );
-};
-
-export default page;
+}

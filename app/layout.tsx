@@ -17,7 +17,7 @@ const ancorli = localFont({
 export const metadata = {
   title: "Ascert.EN | Qualified Digital Signing",
   description:
-    "India's first qualified digital signing device and app. Multilevel seccurity and hardware authentication for digital signitures.",
+    "Back office for Ascert.en qualified digital signing. Manage devices, users, provisioning, and reports.",
 };
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

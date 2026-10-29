@@ -1,6 +1,6 @@
 "use client";
-import { useRouter } from "next/navigation";
-import "./report.css";
+
+import Link from "next/link";
 import {
   Download,
   FileSliders,
@@ -9,6 +9,7 @@ import {
   ShieldAlert,
   Smartphone,
 } from "lucide-react";
+import "./report.css";
 
 const reportSection = [
   {
@@ -38,7 +39,7 @@ const reportSection = [
   {
     image: Download,
     title: "DSC Download Report",
-    body: "DSC/token downloads with status, success, failure, and errors",
+    body: "DSC and token downloads with success, failure, and errors",
     path: "/report/dsc-download-report",
   },
   {
@@ -49,43 +50,33 @@ const reportSection = [
   },
 ];
 
-const Page = () => {
-  const router = useRouter();
-
+export default function Page() {
   return (
     <section className="report-section">
-      <div className="report-header">
-        <h1>Reports</h1>
-        <p>
-          View and generate reports related to devices, provisioning, users, and
-          usage.
-        </p>
-      </div>
+      <header className="page-head">
+        <div>
+          <h1>Reports</h1>
+          <p>
+            View records for devices, provisioning, downloads, and signing.
+          </p>
+        </div>
+      </header>
 
-      <div className="container">
+      <div className="report-grid">
         {reportSection.map((item) => {
           const Icon = item.image;
 
           return (
-            <div
-              key={item.title}
-              onClick={() => router.push(item.path)}
-              className="stat"
-            >
-              <div className="report-icon">
-                <Icon size={26} />
-                <span>{item.title}</span>
-              </div>
-
-              <div className="report-content">
-                <span>{item.body}</span>
-              </div>
-            </div>
+            <Link key={item.path} href={item.path} className="report-card">
+              <span className="report-icon">
+                <Icon size={20} />
+                {item.title}
+              </span>
+              <span className="report-content">{item.body}</span>
+            </Link>
           );
         })}
       </div>
     </section>
   );
-};
-
-export default Page;
+}

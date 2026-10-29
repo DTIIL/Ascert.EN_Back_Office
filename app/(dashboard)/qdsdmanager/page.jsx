@@ -1,124 +1,83 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { AgGridReact } from "ag-grid-react";
-import {
-  AllCommunityModule,
-  ModuleRegistry,
-  themeQuartz,
-} from "ag-grid-community";
-import { dummyData } from "../../../public/data";
-import "./qdsdmanager.css";
-import { StatusRenderer } from "../../../public/utils";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import DataGrid from "../../../components/DataGrid";
+import { StatusRenderer } from "../../../public/utils";
+import { dummyData } from "../../../public/data";
+import { filterRows } from "../../../lib/filterRows";
 
-ModuleRegistry.registerModules([AllCommunityModule]);
+const columnDefs = [
+  { field: "qdsdId", headerName: "QDSD ID" },
+  { field: "serialNumber", headerName: "Serial Number" },
+  { field: "assignedUser", headerName: "Assigned User" },
+  { field: "organization", headerName: "Organization" },
+  { field: "pairingStatus", headerName: "Pairing", cellRenderer: StatusRenderer },
+  { field: "downloadStatus", headerName: "Download", cellRenderer: StatusRenderer },
+  { field: "qdsdStatus", headerName: "QDSD Status", cellRenderer: StatusRenderer },
+  { field: "lastUsed", headerName: "Last Used" },
+  {
+    field: "Action",
+    headerName: "Action",
+    sortable: false,
+    cellRenderer: () => <span className="view-action">View</span>,
+  },
+];
 
-const Page = () => {
+export default function Page() {
   const [inputSearch, setInputSearch] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
   const router = useRouter();
 
-  const columnDefs = useMemo(
-    () => [
-      { field: "qdsdId" },
-      { field: "serialNumber" },
-      { field: "assignedUser" },
-      { field: "organization" },
-      {
-        field: "pairingStatus",
-        cellRenderer: StatusRenderer,
-      },
-      {
-        field: "downloadStatus",
-        cellRenderer: StatusRenderer,
-      },
-      {
-        field: "qdsdStatus",
-        cellRenderer: StatusRenderer,
-      },
-      {
-        field: "lastUsed",
-      },
-      {
-        field: "Action",
-        cellRenderer: () => <span className="view-action">View</span>,
-      },
-    ],
-    [],
+  const filteredData = useMemo(
+    () =>
+      filterRows(
+        dummyData,
+        inputSearch,
+        (row) =>
+          !selectedValue ||
+          row.pairingStatus === selectedValue ||
+          row.downloadStatus === selectedValue ||
+          row.qdsdStatus === selectedValue,
+      ),
+    [inputSearch, selectedValue],
   );
-
-  const defaultColDef = useMemo(
-    () => ({
-      flex: 1,
-      minWidth: 100,
-      sortable: true,
-    }),
-    [],
-  );
-
-  const filteredData = useMemo(() => {
-    const query = inputSearch.trim().toLowerCase();
-
-    return dummyData.filter((row) => {
-      const matchesSearch =
-        !query ||
-        Object.values(row).some((value) =>
-          String(value ?? "")
-            .toLowerCase()
-            .includes(query),
-        );
-
-      const matchesStatus =
-        !selectedValue ||
-        row.pairingStatus === selectedValue ||
-        row.downloadStatus === selectedValue ||
-        row.qdsdStatus === selectedValue;
-
-      return matchesSearch && matchesStatus;
-    });
-  }, [inputSearch, selectedValue]);
-
-  const handleChange = (event) => {
-    setSelectedValue(event.target.value);
-  };
-
-  const handleClick = () => {
-    router.push("/qdsdmanager/qdsdDetails");
-  };
 
   return (
-    <section className="grid gap-10">
-      <div>
-        <h2>QDSD Manager</h2>
-        <span>View and manage all QDSDs</span>
-      </div>
+    <section className="section-container">
+      <header className="page-head">
+        <div>
+          <h1>QDSD Manager</h1>
+          <p>View and manage every qualified digital signing device.</p>
+        </div>
+      </header>
 
-      <div className="input-wrapper">
+      <div className="toolbar">
         <input
           className="custom-input"
           type="search"
-          placeholder="Search anything..."
+          placeholder="Search by ID, user, or organization"
           value={inputSearch}
-          onChange={(e) => setInputSearch(e.target.value)}
+          onChange={(event) => setInputSearch(event.target.value)}
           aria-label="Search QDSD records"
         />
         <select
           className="select"
           value={selectedValue}
-          onChange={handleChange}
+          aria-label="Filter by status"
+          onChange={(event) => setSelectedValue(event.target.value)}
         >
-          <optgroup label="Pairing Status">
-            <option value="">All Status</option>
+          <option value="">All statuses</option>
+          <optgroup label="Pairing status">
             <option value="Paired">Paired</option>
             <option value="Not Paired">Not Paired</option>
           </optgroup>
-          <optgroup label="Download Status">
+          <optgroup label="Download status">
             <option value="Downloaded">Downloaded</option>
             <option value="Pending">Pending</option>
             <option value="Download Failed">Download Failed</option>
           </optgroup>
-          <optgroup label="QDSD Status">
+          <optgroup label="QDSD status">
             <option value="Waiting for DSC">Waiting for DSC</option>
             <option value="Suspended">Suspended</option>
             <option value="Inactive">Inactive</option>
@@ -128,18 +87,11 @@ const Page = () => {
         </select>
       </div>
 
-      <div className="ag-grid">
-        <AgGridReact
-          rowData={filteredData}
-          columnDefs={columnDefs}
-          defaultColDef={defaultColDef}
-          theme={themeQuartz}
-          pagination={true}
-          onRowClicked={handleClick}
-        />
-      </div>
+      <DataGrid
+        rowData={filteredData}
+        columnDefs={columnDefs}
+        onRowClicked={() => router.push("/qdsdmanager/qdsdDetails")}
+      />
     </section>
   );
-};
-
-export default Page;
+}
