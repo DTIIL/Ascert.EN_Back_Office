@@ -8,10 +8,7 @@ const ReusableTab = ({ tabs = [], defaultActiveTab = 0, className = "" }) => {
 
   if (!tabs.length) return null;
 
-  const activeIndex = Math.min(
-    Math.max(defaultActiveTab === activeTab ? activeTab : activeTab, 0),
-    tabs.length - 1,
-  );
+  const activeIndex = Math.min(Math.max(activeTab, 0), tabs.length - 1);
 
   const activeItem = tabs[activeIndex];
   const activeId = activeItem.id ?? activeIndex;

@@ -75,6 +75,7 @@ const Sidenav = () => {
 
   return (
     <nav className="sidenav" aria-label="Main">
+      <p className="sidenav-label">Workspace</p>
       <ul className="sidenav-list">
         {NAV_ITEMS.map((item) => {
           const isActive =

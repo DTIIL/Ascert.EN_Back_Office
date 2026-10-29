@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import { useEffect, useRef, useState } from "react";
 import "./user.css";
@@ -19,9 +18,8 @@ const AddUser = ({ setIsVisible, onCreate, onUpdate, user }) => {
   );
 
   useEffect(() => {
-    setDetails(user ? { ...emptyUser, ...user } : emptyUser);
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [user]);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -147,17 +145,12 @@ const AddUser = ({ setIsVisible, onCreate, onUpdate, user }) => {
         </div>
 
         <div className="btn-container">
-          <button
-            type="button"
-            className="button-9"
-            style={{ width: "auto", background: "gray" }}
-            onClick={handleCancel}
-          >
+          <button type="button" className="btn btn-secondary" onClick={handleCancel}>
             Cancel
           </button>
 
-          <button type="submit" className="button-9" style={{ width: "auto" }}>
-            {isEdit ? "Update User" : "Create User"}
+          <button type="submit" className="btn btn-primary">
+            {isEdit ? "Update user" : "Create user"}
           </button>
         </div>
       </form>

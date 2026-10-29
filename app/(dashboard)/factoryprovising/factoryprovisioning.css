@@ -13,7 +13,7 @@ h1 {
   color: blue;
   cursor: pointer;
 }
-.stat {
+.summary-card {
   background: #fff;
   border-radius: 14px;
   padding: 16px 18px;
@@ -70,11 +70,11 @@ h1 {
 }
 /* Main page */
 .factory-details-page {
-  padding: 20px;
-  background: #f5f8fc;
-  min-height: 100vh;
+  padding: 0;
+  background: transparent;
+  min-height: 0;
   color: #17304f;
-  font-family: Arial, sans-serif;
+  font-family: inherit;
 }
 
 .factory-page-title h1 {

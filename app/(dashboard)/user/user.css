@@ -107,9 +107,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-.add-user-component {
-  height: calc(100vh);
+  gap: 16px;
 }
 .width-100 {
   width: 100%;
@@ -131,9 +129,10 @@
   padding: 24px;
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  border-radius: 14px;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  box-shadow: var(--shadow);
+  font-family: inherit;
 }
 
 .add-user-component h1 {

@@ -1,8 +1,8 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import { useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
+import { themeQuartz } from "ag-grid-community";
 import { useRouter } from "next/navigation";
 import "../factoryprovisioning.css";
 
@@ -137,7 +137,7 @@ const StatusBadge = (props) => (
   </span>
 );
 
-const page = () => {
+function Page() {
   const router = useRouter();
 
   const stageColumnDefs = useMemo(
@@ -222,9 +222,9 @@ const page = () => {
   return (
     <section className="factory-details-page">
       <div className="detail-header-section">
-        <span className="back-to-dashboard" onClick={() => router.back()}>
-          {"< Back to Provisioning Dashboard"}
-        </span>
+        <button type="button" className="back-to-dashboard" onClick={() => router.back()}>
+          Back to provisioning
+        </button>
 
         <span>Last update 12 Sep 2026 10:24 AM</span>
       </div>
@@ -232,8 +232,8 @@ const page = () => {
       <div className="factory-page-title">
         <h1>Factory Provisioning Details</h1>
       </div>
-      <div style={{ overflowY: "scroll", height: "calc(100vh - 200px)" }}>
-        <div className="stat">
+      <div>
+        <div className="summary-card">
           <div className="flex">
             {details1.map((item, index) => (
               <div className="content" key={index}>
@@ -295,12 +295,13 @@ const page = () => {
 
           <div className="provisioning-grid ag-theme-alpine">
             <AgGridReact
+              theme={themeQuartz}
               rowData={stageData}
               columnDefs={stageColumnDefs}
               defaultColDef={defaultColDef}
               domLayout="autoHeight"
               suppressCellFocus={true}
-              animateRows={true}
+              animateRows={false}
               getRowId={(params) => params.data.stage}
             />
           </div>
@@ -312,12 +313,13 @@ const page = () => {
 
           <div className="provisioning-grid ag-theme-alpine">
             <AgGridReact
+              theme={themeQuartz}
               rowData={eventData}
               columnDefs={eventColumnDefs}
               defaultColDef={defaultColDef}
               domLayout="autoHeight"
               suppressCellFocus={true}
-              animateRows={true}
+              animateRows={false}
               getRowId={(params) =>
                 `${params.data.timestamp}-${params.data.event}`
               }
@@ -327,6 +329,6 @@ const page = () => {
       </div>
     </section>
   );
-};
+}
 
-export default page;
+export default Page;

@@ -7,8 +7,7 @@ import DownloadHistory from "../../../../components/Tabs/DownloadHistory";
 import SigningHistory from "../../../../components/Tabs/SigningHistory";
 import ErrorLogs from "../../../../components/Tabs/ErrorLogs";
 import ActivityHistory from "../../../../components/Tabs/ActivityHistory";
-const page = () => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export default function Page() {
   const router = useRouter();
 
   const handleBack = () => {
@@ -66,12 +65,12 @@ const page = () => {
   return (
     <section style={{ display: "grid", gap: "14px" }}>
       <div className="grid">
-        <span className="back-btn" onClick={handleBack}>
-          ← Back to QDSD Manager
-        </span>
-        <span className="title">QDSD Details</span>
+        <button type="button" className="back-btn" onClick={handleBack}>
+          Back to QDSD Manager
+        </button>
+        <h1 className="title">QDSD Details</h1>
       </div>
-      <div className="flex stat">
+      <div className="summary-strip">
         <div className="grid">
           <span className="sub-title">QDSD ID</span>
           <span>*******</span>
@@ -107,6 +106,4 @@ const page = () => {
       </div>
     </section>
   );
-};
-
-export default page;
+}
