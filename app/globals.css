@@ -142,3 +142,31 @@ body {
   gap: 20px;
   position: relative;
 }
+.custom-input {
+  width: var(--input-width);
+  font-family: inherit;
+  font-size: var(--input-font-size);
+  padding: var(--input-pad-y) var(--input-pad-x);
+  border-radius: var(--input-radius);
+  background: var(--input-bg);
+  color: var(--input-color);
+  border: var(--input-border);
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.custom-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.custom-input:focus {
+  border-color: var(--input-focus-color);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
+}
+.view-action {
+  color: blue;
+  cursor: pointer;
+  font-size: 17px;
+}
