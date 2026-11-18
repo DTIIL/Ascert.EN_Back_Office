@@ -1,0 +1,61 @@
+.user-menu {
+  position: relative;
+}
+
+.logout-container {
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid #d6dce4;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+.user-chip img,
+.brand-icon img {
+  display: block;
+}
+
+a.signin-button {
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.report-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.provisioning-grid table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 13px;
+}
+
+.provisioning-grid th,
+.provisioning-grid td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid #e6ebf2;
+  vertical-align: top;
+}
+
+.provisioning-grid th {
+  background: #f6f8fc;
+  color: #4a5875;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tab-panel[hidden] {
+  display: none;
+}

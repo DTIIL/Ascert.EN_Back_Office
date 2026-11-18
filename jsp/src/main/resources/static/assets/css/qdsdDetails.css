@@ -1,0 +1,21 @@
+.title {
+  color: black;
+  font-size: 24px;
+  font-weight: 700;
+}
+.back-btn {
+  cursor: pointer;
+  color: blue;
+}
+.stat {
+  display: flex;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 18px;
+  border: 1px solid #eef2f7;
+}
+.sub-title {
+  color: gray;
+  font-size: smaller;
+}

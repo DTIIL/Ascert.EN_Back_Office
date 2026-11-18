@@ -1,0 +1,10 @@
+@font-face {
+  font-family: "Ancorli";
+  src: url("../fonts/ancorli.otf") format("opentype");
+  font-display: swap;
+}
+
+:root {
+  --font-plex: "IBM Plex Sans", sans-serif;
+  --font-ancorli: "Ancorli", sans-serif;
+}
