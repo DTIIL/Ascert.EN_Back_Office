@@ -1,0 +1,394 @@
+
+:root {
+    --navy: #001332;
+    --blue: #005df8;
+    --slate: #4a5875;
+    --ice: #e6effe;
+    --muted: #64748b;
+    --gray: #9ca3b0;
+    --line: #d6dce4;
+    --sand: #f6f5f3;
+    --shadow: 0 1px 2px rgba(15,23,42,.04), 0 8px 24px rgba(15,23,42,.04);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: var(--navy);
+    font-family: "IBM Plex Sans", Arial, sans-serif;
+    background: #f4f7fb;
+    overflow: hidden;
+}
+
+/* Application layout */
+
+.app-shell {
+    height: 100vh;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Header */
+
+.header-container {
+    height: 64px;
+    background: #fff;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+}
+
+.flex-item-center {
+    display: flex;
+    align-items: center;
+}
+
+.gap-10 {
+    gap: 10px;
+}
+
+.heading {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.brand-title {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -.03em;
+    line-height: 1.15;
+}
+
+.brand-subtitle,
+.user-role {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.user-name {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.user-menu {
+    position: relative;
+}
+
+.user-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 12px 4px 4px;
+    border-radius: 999px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.logout-container {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 10;
+    background: #fff;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.logout-btn-minimal {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #4b5563;
+    background: transparent;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.logout-btn-minimal:hover {
+    background: #f9fafb;
+}
+
+/* Sidebar */
+
+.sidenav {
+    width: 248px;
+    flex-shrink: 0;
+    background: #fff;
+    border-right: 1px solid var(--line);
+    padding: 18px 12px;
+    overflow: auto;
+}
+
+.sidenav-label {
+    margin: 0 12px 10px;
+    color: var(--gray);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.sidenav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidenav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: var(--slate);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 550;
+    line-height: 1.3;
+}
+
+.sidenav-link svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.sidenav-link:hover {
+    background: var(--sand);
+    color: var(--navy);
+}
+
+.sidenav-link.active {
+    background: var(--ice);
+    color: var(--blue);
+    box-shadow: inset 3px 0 0 var(--blue);
+}
+
+/* Main content */
+
+.app-content {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 32px 40px;
+    overflow: auto;
+}
+
+.app-content h1,
+.app-content h2 {
+    margin: 0;
+    letter-spacing: -.03em;
+    color: var(--navy);
+}
+
+.app-content h1 {
+    font-size: 26px;
+    font-weight: 650;
+}
+
+/* Dashboard */
+
+.dashboard-section {
+    display: grid;
+    gap: 22px;
+}
+
+.page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.page-head p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.stat,
+.chart-card {
+    background: #fff;
+    border: 1px solid #e6ebf2;
+    border-radius: 14px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+}
+
+.stat .label {
+    color: var(--muted);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.blue { background: #005df8; }
+.green { background: #1e6b3c; }
+.orange { background: #e8a33d; }
+.red { background: #b42318; }
+
+.stat b {
+    display: block;
+    font-size: 28px;
+    margin-top: 10px;
+    letter-spacing: -.04em;
+    line-height: 1;
+}
+
+.stat-hint {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.section-label {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--slate);
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.chart-card {
+    min-width: 0;
+}
+
+.chart-card h2 {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.chart-canvas {
+    height: 200px;
+    position: relative;
+}
+
+/* Responsive */
+
+@media (max-width: 1100px) {
+    .stats,
+    .chart-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .sidenav {
+        width: 72px;
+        padding-inline: 8px;
+    }
+
+    .sidenav-label,
+    .sidenav-link span {
+        display: none;
+    }
+
+    .sidenav-link {
+        justify-content: center;
+    }
+
+    .app-content {
+        padding: 20px 16px 32px;
+    }
+}
+
+@media (max-width: 720px) {
+    .stats,
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+/* Keyboard accessibility */
+.sidenav-link:focus-visible,
+.user-chip:focus-visible,
+.logout-btn-minimal:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 3px;
+}
+
+/* Better viewport handling */
+.app-shell {
+    height: 100vh;
+    height: 100dvh;
+}
+
+/* Improve mobile navigation */
+@media (max-width: 720px) {
+
+    .header-container {
+        padding: 0 12px;
+    }
+
+    .sidenav {
+        width: 60px;
+        padding-inline: 6px;
+    }
+
+    .sidenav-link {
+        padding: 12px 8px;
+    }
+
+    .app-content {
+        padding: 16px 12px 28px;
+    }
+
+    .stat,
+    .chart-card {
+        padding: 14px;
+    }
+
+    .app-content h1 {
+        font-size: 22px;
+    }
+}
+

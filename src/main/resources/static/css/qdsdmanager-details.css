@@ -1,0 +1,344 @@
+
+/* QDSD Details Page */
+
+.qdsd-details-section {
+    width: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.details-back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #0860E8;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.details-back-link:hover {
+    text-decoration: underline;
+}
+
+/* Page Heading */
+
+.details-page-heading {
+    margin-bottom: 24px;
+}
+
+.details-page-heading h1 {
+    margin: 0 0 6px;
+    font-size: 25px;
+    font-weight: 650;
+    color: #202938;
+}
+
+.details-page-heading p {
+    margin: 0;
+    color: #737D8C;
+    font-size: 14px;
+}
+
+/* Summary Card */
+
+.details-summary-card {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+    padding: 24px;
+    margin-bottom: 24px;
+    background: #FFFFFF;
+    border: 1px solid #E6EAF0;
+    border-radius: 10px;
+}
+
+.details-summary-item,
+.details-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.details-summary-item span,
+.details-info-item span {
+    color: #778293;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.details-summary-item strong,
+.details-info-item strong {
+    color: #202938;
+    font-size: 14px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* Tabs */
+
+.details-tabs {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 0 4px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #E3E8EF;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.details-tab {
+    display: inline-block;
+    flex-shrink: 0;
+    padding: 14px 2px;
+    margin-bottom: -1px;
+    color: #737D8C;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    text-decoration: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.details-tab:hover,
+.details-tab:focus-visible {
+    color: #0860E8;
+}
+
+.details-tab.active {
+    color: #0860E8;
+    border-bottom-color: #0860E8;
+}
+
+/* Tab Content */
+
+.details-tab-content[hidden] {
+    display: none !important;
+}
+
+/* Overview Sections */
+
+.details-content-section,
+.details-history-section {
+    padding: 24px;
+    margin-bottom: 20px;
+    background: #FFFFFF;
+    border: 1px solid #E6EAF0;
+    border-radius: 10px;
+    scroll-margin-top: 20px;
+}
+
+.details-content-section h2,
+.details-history-section h2 {
+    margin: 0 0 20px;
+    color: #202938;
+    font-size: 16px;
+    font-weight: 650;
+}
+
+.details-content-section h2:not(:first-child) {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #E9EDF2;
+}
+
+.details-information-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px 24px;
+}
+
+.details-info-item {
+    padding-bottom: 4px;
+}
+
+/* History Sections */
+
+.details-history-section {
+    padding: 0;
+    overflow: hidden;
+}
+
+.details-history-section p {
+    margin: 0;
+    padding: 24px;
+    color: #778293;
+    font-size: 14px;
+}
+
+/* Download History Table */
+
+.details-history-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.details-history-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.details-history-table thead {
+    background: #F5F7FA;
+}
+
+.details-history-table th {
+    padding: 13px 10px;
+    color: #687995;
+    font-size: 11px;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid #E5EAF1;
+}
+
+.details-history-table td {
+    padding: 14px 10px;
+    color: #172B4D;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+    border-bottom: 1px solid #E5EAF1;
+}
+
+.details-history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Table Column Widths */
+
+.details-history-table th:nth-child(1),
+.details-history-table td:nth-child(1) {
+    width: 15%;
+}
+
+.details-history-table th:nth-child(2),
+.details-history-table td:nth-child(2) {
+    width: 10%;
+}
+
+.details-history-table th:nth-child(3),
+.details-history-table td:nth-child(3) {
+    width: 17%;
+}
+
+.details-history-table th:nth-child(4),
+.details-history-table td:nth-child(4) {
+    width: 15%;
+}
+
+.details-history-table th:nth-child(5),
+.details-history-table td:nth-child(5) {
+    width: 8%;
+}
+
+.details-history-table th:nth-child(6),
+.details-history-table td:nth-child(6) {
+    width: 35%;
+}
+
+
+
+.history-empty {
+    padding: 24px !important;
+    color: #687995 !important;
+    text-align: center !important;
+}
+
+/* Responsive Layout */
+
+@media (max-width: 1100px) {
+
+    .details-summary-card {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .details-information-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .qdsd-details-section {
+        padding: 16px;
+    }
+
+    .details-summary-card {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+        padding: 18px;
+    }
+
+    .details-information-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .details-tabs {
+        gap: 20px;
+    }
+
+    .details-content-section {
+        padding: 18px;
+    }
+
+    .details-history-section {
+        padding: 0;
+    }
+
+}
+
+@media (max-width: 400px) {
+
+    .details-summary-card {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* Common History Status */
+.history-status {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Success - Green */
+.status-success {
+    background: #E8F7ED;
+    color: #218044;
+}
+
+/* Failed - Red */
+.status-failed {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+/* Pending - Orange */
+.status-pending {
+    background: #FFF4E5;
+    color: #B45309;
+}
+
+/* Other - Grey */
+.status-neutral {
+    background: #EEF1F5;
+    color: #526071;
+}

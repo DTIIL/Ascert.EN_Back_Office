@@ -1,0 +1,466 @@
+
+/* ================================
+   Reports Section
+================================ */
+
+.reports-section {
+    padding: 28px;
+    width: 100%;
+}
+
+.reports-page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.reports-page-heading h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.reports-page-heading p {
+    margin: 0;
+    color: #737987;
+    font-size: 14px;
+}
+
+
+/* ================================
+   Reports Grid
+================================ */
+
+.reports-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.report-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-height: 125px;
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid #e6e9ef;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.report-card:hover {
+    border-color: #b8c5dc;
+    box-shadow: 0 5px 18px rgba(20, 35, 60, 0.08);
+    transform: translateY(-2px);
+}
+
+.report-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    background: #f0f4fa;
+}
+
+.report-card-icon svg {
+    width: 25px;
+    height: 25px;
+    fill: none;
+    stroke: #344d73;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.report-card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.report-card-content h2 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #202938;
+}
+
+.report-card-content p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #737987;
+}
+
+.report-card-arrow {
+    flex-shrink: 0;
+    font-size: 23px;
+    color: #7b8493;
+}
+
+
+/* ================================
+   Report Links
+================================ */
+
+.report-back-link {
+    display: inline-block;
+    margin-bottom: 22px;
+    color: #344d73;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.report-back-link:hover {
+    text-decoration: underline;
+}
+
+.report-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 22px;
+    color: #737987;
+    font-size: 13px;
+}
+
+.report-breadcrumb a {
+    color: #344d73;
+    text-decoration: none;
+}
+
+.report-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+
+/* ================================
+   Empty State
+================================ */
+
+.report-empty-state {
+    padding: 48px 24px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #e6e9ef;
+    border-radius: 12px;
+}
+
+.report-empty-state h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: #202938;
+}
+
+.report-empty-state p {
+    margin: 0;
+    color: #737987;
+    font-size: 14px;
+}
+
+
+/* ================================
+   Report Toolbar
+================================ */
+
+.report-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin: 22px 0;
+    color: #65738a;
+    font-size: 13px;
+}
+
+.report-toolbar input {
+    width: min(360px, 100%);
+    padding: 12px 14px;
+    border: 1px solid #d7deea;
+    border-radius: 7px;
+    background: #ffffff;
+    font-size: 14px;
+    outline: none;
+}
+
+.report-toolbar input:focus {
+    border-color: #1764ff;
+}
+
+
+/* Provisioning Report Filters */
+
+.report-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.report-toolbar .report-search,
+.report-toolbar .report-status-filter {
+    height: 41px;
+    padding: 0 14px;
+    border: 1px solid #d7deea;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #202938;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.report-toolbar .report-search {
+    width: 360px;
+    max-width: 100%;
+}
+
+.report-toolbar .report-status-filter {
+    width: 300px;
+    max-width: 100%;
+    cursor: pointer;
+}
+
+.report-toolbar .report-search:focus,
+.report-toolbar .report-status-filter:focus {
+    border-color: #1764ff;
+}
+
+
+/* ================================
+   Report Table
+================================ */
+
+.report-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background: #ffffff;
+    border: 1px solid #e1e5ec;
+    border-radius: 12px;
+}
+
+.report-data-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.report-data-table th {
+    height: 44px;
+    padding: 0 14px;
+    text-align: left;
+    background: #f6f8fc;
+    color: #4a5875;
+    font-size: 12px;
+    font-weight: 600;
+    border-bottom: 1px solid #e6ebf2;
+}
+
+.report-data-table td {
+    height: 46px;
+    padding: 0 14px;
+    text-align: left;
+    color: #1d1d1b;
+    border-bottom: 1px solid #e6ebf2;
+}
+
+.report-data-table tbody tr:nth-child(odd) {
+    background: #fbfcfe;
+}
+
+.report-data-table tbody tr:hover {
+    background: #f3f7ff;
+}
+
+.report-data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.no-report-records {
+    text-align: center !important;
+    padding: 30px !important;
+    color: #718096 !important;
+}
+
+
+/* ================================
+   Report Pagination
+   Same layout as Provisioning
+================================ */
+
+.report-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    min-height: 46px;
+    padding: 8px 14px;
+    background: #ffffff;
+    border-top: 1px solid #e6ebf2;
+    color: #526078;
+    font-size: 13px;
+}
+
+.pagination-size {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-size select {
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid #d7deea;
+    border-radius: 5px;
+    background: #ffffff;
+    font-size: 13px;
+    color: #202938;
+    cursor: pointer;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pagination-controls button {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #e1e5ec;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #34445f;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+    background: #f3f7ff;
+    border-color: #b9d0ff;
+}
+
+.pagination-controls button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.pagination-page {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-page span {
+    min-width: 30px;
+    padding: 7px;
+    text-align: center;
+    border: 1px solid #d7deea;
+    border-radius: 5px;
+    color: #1d1d1b;
+}
+
+
+/* ================================
+   Responsive Design
+================================ */
+
+@media (max-width: 800px) {
+
+    .reports-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reports-section {
+        padding: 18px;
+    }
+
+    .report-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .report-filters {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .report-toolbar .report-search,
+    .report-toolbar .report-status-filter {
+        width: 100%;
+    }
+
+    .report-pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+
+
+
+/* QDSD Usage action badges */
+.action-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.action-success {
+    background: #e8f5ed;
+    color: #168044;
+}
+
+.action-pending {
+    background: #e8f1ff;
+    color: #245bb5;
+}
+
+.action-failed {
+    background: #fdeaea;
+    color: #c62828;
+}
+
+.action-paired {
+    background: #f0eaff;
+    color: #7041b5;
+}
+
+.action-default {
+    background: #eef0f3;
+    color: #596579;
+}
+
+
+
+/* Reports breadcrumb link */
+.report-breadcrumb a {
+    color: #1764ff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.report-breadcrumb a:hover {
+    color: #0047cc;
+    text-decoration: underline;
+}
+
+.report-breadcrumb a:focus-visible {
+    outline: 2px solid #1764ff;
+    outline-offset: 3px;
+    border-radius: 2px;
+}
