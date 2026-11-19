@@ -1,4 +1,3 @@
-
 package com.ascerten.backofficeapplication.service;
 
 import com.ascerten.backofficeapplication.entity.User;
@@ -23,6 +22,7 @@ public class AuthService {
         this.roleAccessService = roleAccessService;
     }
 
+    // Existing normal email/password authentication
     public Optional<User> authenticate(String emailId, String password) {
 
         // Backend input validation
@@ -62,6 +62,48 @@ public class AuthService {
         // Reject unsupported roles
         String roleName = roleOptional.get().getUserRole();
 
+        if (!roleAccessService.isSupportedRole(roleName)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(user);
+    }
+
+    // Microsoft SSO authentication
+    public Optional<User> authenticateMicrosoft(String emailId) {
+
+        if (emailId == null || emailId.trim().isEmpty()) {
+            return Optional.empty();
+        }
+
+        String normalizedEmail = emailId.trim();
+
+        // Find user by Microsoft email
+        Optional<User> userOptional =
+                userRepository.findByEmailIdIgnoreCase(normalizedEmail);
+
+        if (userOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        User user = userOptional.get();
+
+        // Validate active user
+        if (!roleAccessService.isActiveUser(user)) {
+            return Optional.empty();
+        }
+
+        // Validate active role
+        Optional<MasterUserRole> roleOptional =
+                roleAccessService.activeRole(user);
+
+        if (roleOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        String roleName = roleOptional.get().getUserRole();
+
+        // Reject unsupported roles
         if (!roleAccessService.isSupportedRole(roleName)) {
             return Optional.empty();
         }

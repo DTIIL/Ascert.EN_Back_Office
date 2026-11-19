@@ -1,4 +1,3 @@
-
 package com.ascerten.backofficeapplication.config;
 
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +21,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/",
                         "/login",
+                        "/logout",
                         "/access-denied",
+                        "/oauth2/**",
+                        "/login/oauth2/**",
                         "/css/**",
                         "/js/**",
                         "/images/**",

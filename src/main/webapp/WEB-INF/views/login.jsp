@@ -8,6 +8,9 @@
     <title>Ascert.en | Sign In</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <link rel="icon" type="image/svg+xml"
+          href="${pageContext.request.contextPath}/assets/Icon_logo.svg">
+
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/login.css">
 </head>
@@ -36,7 +39,24 @@
             Access the back office to manage devices, users, and reports.
         </p>
 
-        <button class="sso-button" type="button" disabled>
+        <!-- Microsoft SSO Error Messages -->
+        <c:if test="${param.error == 'sso_rejected'}">
+            <div class="login-error" role="alert">
+                Your Microsoft account is not authorized to access this application.
+                Please contact your administrator.
+            </div>
+        </c:if>
+
+        <c:if test="${param.error != null && param.error != 'sso_rejected'}">
+            <div class="login-error" role="alert">
+                Microsoft sign-in failed. Please try again.
+            </div>
+        </c:if>
+
+        <!-- Microsoft SSO -->
+        <button class="sso-button"
+                type="button"
+                onclick="window.location.href='${pageContext.request.contextPath}/oauth2/authorization/sso'">
             Continue with SSO
         </button>
 
@@ -64,7 +84,9 @@
                        required>
             </label>
 
-            <p class="error-message" id="emailError"><c:out value="${emailError}"/></p>
+            <p class="error-message" id="emailError">
+                <c:out value="${emailError}"/>
+            </p>
 
             <!-- Password field -->
             <label class="login-field">
@@ -83,10 +105,14 @@
                 </button>
             </label>
 
-            <p class="error-message" id="passwordError"><c:out value="${passwordError}"/></p>
+            <p class="error-message" id="passwordError">
+                <c:out value="${passwordError}"/>
+            </p>
 
             <!-- General login error -->
-            <p class="error-message" id="loginError"><c:out value="${loginError}"/></p>
+            <p class="error-message" id="loginError">
+                <c:out value="${loginError}"/>
+            </p>
 
             <div class="form-options">
                 <label class="remember-me">

@@ -1,10 +1,11 @@
-
 package com.ascerten.backofficeapplication.controller;
 
+import com.ascerten.backofficeapplication.entity.MasterUserRole;
 import com.ascerten.backofficeapplication.service.AuthService;
 import com.ascerten.backofficeapplication.service.RoleAccessService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -12,8 +13,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.ascerten.backofficeapplication.entity.MasterUserRole;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -27,13 +36,16 @@ public class UserController {
 
     private final AuthService authService;
     private final RoleAccessService roleAccessService;
+    private final SecurityContextRepository securityContextRepository;
 
     public UserController(
             AuthService authService,
-            RoleAccessService roleAccessService) {
+            RoleAccessService roleAccessService,
+            SecurityContextRepository securityContextRepository) {
 
         this.authService = authService;
         this.roleAccessService = roleAccessService;
+        this.securityContextRepository = securityContextRepository;
     }
 
     @GetMapping("/")
@@ -65,11 +77,12 @@ public class UserController {
             @RequestParam(required = false) String emailId,
             @RequestParam(required = false) String password,
             HttpServletRequest request,
+            HttpServletResponse response,
             RedirectAttributes redirectAttributes) {
 
         boolean hasError = false;
 
-        // Validate email.
+        // Validate email
         if (emailId == null || emailId.trim().isEmpty()) {
 
             redirectAttributes.addFlashAttribute(
@@ -89,7 +102,7 @@ public class UserController {
             hasError = true;
         }
 
-        // Validate password.
+        // Validate password
         if (password == null || password.trim().isEmpty()) {
 
             redirectAttributes.addFlashAttribute(
@@ -100,7 +113,7 @@ public class UserController {
             hasError = true;
         }
 
-        // Return to login if validation fails.
+        // Return to login if validation fails
         if (hasError) {
 
             if (emailId != null) {
@@ -119,7 +132,7 @@ public class UserController {
 
                 .map(user -> {
 
-                    // Verify that the user account and assigned role are active.
+                    // Verify that the user has an active role
                     Optional<MasterUserRole> activeRole =
                             roleAccessService.activeRoleForSessionUser(
                                     user.getId()
@@ -140,43 +153,70 @@ public class UserController {
                         return "redirect:/login";
                     }
 
-                    // Invalidate previous session.
+                    String roleName = activeRole.get().getUserRole();
+
+                    // Invalidate previous session
                     HttpSession oldSession = request.getSession(false);
 
                     if (oldSession != null) {
                         oldSession.invalidate();
                     }
 
-                    // Create a fresh session.
+                    // Clear previous SecurityContext
+                    SecurityContextHolder.clearContext();
+
+                    // Create a fresh session
                     HttpSession session = request.getSession(true);
 
-                    // Set inactivity timeout to 60 minutes.
+                    // Inactivity timeout (60 minutes)
                     session.setMaxInactiveInterval(60 * 60);
 
-                    // Store login time for existing fixed one-hour expiry.
+                    // Fixed one-hour expiry from login time
                     session.setAttribute(
                             "loginTime",
                             System.currentTimeMillis()
                     );
 
-                    // Store logged-in user details.
+                    // Store user details in session
                     session.setAttribute("loggedInUserId", user.getId());
                     session.setAttribute("loggedInUserName", user.getName());
                     session.setAttribute("loggedInUsername", user.getUsername());
 
-                    // Store role ID and role name.
+                    // Store role details
                     session.setAttribute("loggedInRole", user.getUserRole());
+                    session.setAttribute("loggedInRoleName", roleName);
 
-                    roleAccessService.activeRole(user).ifPresent(role ->
-                            session.setAttribute(
-                                    "loggedInRoleName",
-                                    role.getUserRole()
-                            )
-                    );
-
-                    // Maintain dashboard compatibility.
+                    // Maintain dashboard compatibility
                     session.setAttribute("loggedInUser", user.getName());
 
+                    // Create Spring Security Authentication
+                    Authentication authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    user.getUsername(),
+                                    null,
+                                    List.of(
+                                            new SimpleGrantedAuthority(
+                                                    "ROLE_" + roleName
+                                            )
+                                    )
+                            );
+
+                    // Create SecurityContext
+                    SecurityContext securityContext =
+                            SecurityContextHolder.createEmptyContext();
+
+                    securityContext.setAuthentication(authentication);
+
+                    SecurityContextHolder.setContext(securityContext);
+
+                    // Save SecurityContext so it persists across requests
+                    securityContextRepository.saveContext(
+                            securityContext,
+                            request,
+                            response
+                    );
+
+                    // Redirect according to user's role
                     return "redirect:" + homePath(session);
                 })
 
@@ -197,13 +237,21 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public String logout(HttpServletRequest request) {
+    public String logout(
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
-        HttpSession session = request.getSession(false);
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
 
-        if (session != null) {
-            session.invalidate();
-        }
+        // Clear Spring Security authentication and invalidate session
+        new SecurityContextLogoutHandler().logout(
+                request,
+                response,
+                authentication
+        );
+
+        SecurityContextHolder.clearContext();
 
         return "redirect:/login";
     }
@@ -213,7 +261,7 @@ public class UserController {
         return "access-denied";
     }
 
-    // Check whether the user's session is valid.
+    // Check whether the user's session is valid
     private boolean isValidSession(HttpSession session) {
 
         if (session == null) {
@@ -231,6 +279,7 @@ public class UserController {
         long elapsedTime =
                 System.currentTimeMillis() - (Long) loginTime;
 
+        // Fixed expiry: one hour from login
         if (elapsedTime >= SESSION_TIMEOUT) {
             session.invalidate();
             return false;
