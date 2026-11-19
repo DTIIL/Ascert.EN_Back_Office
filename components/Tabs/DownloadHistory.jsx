@@ -1,5 +1,10 @@
 "use client";
+
+import { useMemo, useState } from "react";
+import DateRangePicker from "../DateRangePicker";
+import { isWithinDateRange } from "../../lib/dateRange";
 import "./overview.css";
+
 const downloadAttempts = [
   {
     id: 1,
@@ -32,9 +37,26 @@ const downloadAttempts = [
 ];
 
 const DownloadHistory = () => {
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const rows = useMemo(
+    () =>
+      downloadAttempts.filter((item) =>
+        isWithinDateRange(item.dateTime, startDate, endDate),
+      ),
+    [startDate, endDate],
+  );
+
   return (
     <section className="detail-section attempts-section">
-      {/* <div className="detail-section-header">DSC Download Attempts</div> */}
+      <div className="toolbar table-date-toolbar">
+        <DateRangePicker
+          startDate={startDate}
+          endDate={endDate}
+          onStartChange={setStartDate}
+          onEndChange={setEndDate}
+        />
+      </div>
       <div className="attempts-table-wrapper">
         <table className="attempts-table">
           <thead>
@@ -49,7 +71,7 @@ const DownloadHistory = () => {
           </thead>
 
           <tbody>
-            {downloadAttempts.map((item) => (
+            {rows.map((item) => (
               <tr key={item.id}>
                 <td>{item.dateTime}</td>
 
@@ -65,6 +87,11 @@ const DownloadHistory = () => {
                 <td className="attempt-error">{item.errorDetails}</td>
               </tr>
             ))}
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={6}>No records match this date range.</td>
+              </tr>
+            ) : null}
           </tbody>
         </table>
       </div>

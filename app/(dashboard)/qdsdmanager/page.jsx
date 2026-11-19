@@ -3,9 +3,11 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import DataGrid from "../../../components/DataGrid";
+import DateRangePicker from "../../../components/DateRangePicker";
 import { StatusRenderer } from "../../../public/utils";
 import { dummyData } from "../../../public/data";
 import { filterRows } from "../../../lib/filterRows";
+import { isWithinDateRange } from "../../../lib/dateRange";
 
 const columnDefs = [
   { field: "qdsdId", headerName: "QDSD ID" },
@@ -27,20 +29,24 @@ const columnDefs = [
 export default function Page() {
   const [inputSearch, setInputSearch] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const router = useRouter();
 
   const filteredData = useMemo(
     () =>
-      filterRows(
-        dummyData,
-        inputSearch,
-        (row) =>
+      filterRows(dummyData, inputSearch, (row) => {
+        const matchesStatus =
           !selectedValue ||
           row.pairingStatus === selectedValue ||
           row.downloadStatus === selectedValue ||
-          row.qdsdStatus === selectedValue,
-      ),
-    [inputSearch, selectedValue],
+          row.qdsdStatus === selectedValue;
+        return (
+          matchesStatus &&
+          isWithinDateRange(row.lastUsed, startDate, endDate)
+        );
+      }),
+    [inputSearch, selectedValue, startDate, endDate],
   );
 
   return (
@@ -85,6 +91,12 @@ export default function Page() {
             <option value="Error">Error</option>
           </optgroup>
         </select>
+        <DateRangePicker
+          startDate={startDate}
+          endDate={endDate}
+          onStartChange={setStartDate}
+          onEndChange={setEndDate}
+        />
       </div>
 
       <DataGrid

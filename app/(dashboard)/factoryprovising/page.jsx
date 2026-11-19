@@ -3,8 +3,10 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import DataGrid from "../../../components/DataGrid";
+import DateRangePicker from "../../../components/DateRangePicker";
 import { factoryProvisioningData } from "../../../public/data";
 import { filterRows } from "../../../lib/filterRows";
+import { isWithinDateRange } from "../../../lib/dateRange";
 import { StatusRenderer } from "../../../public/utils";
 
 const columnDefs = [
@@ -28,11 +30,16 @@ const columnDefs = [
 
 export default function Page() {
   const [inputSearch, setInputSearch] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const router = useRouter();
 
   const filteredData = useMemo(
-    () => filterRows(factoryProvisioningData, inputSearch),
-    [inputSearch],
+    () =>
+      filterRows(factoryProvisioningData, inputSearch, (row) =>
+        isWithinDateRange(row.lastUpdated, startDate, endDate),
+      ),
+    [inputSearch, startDate, endDate],
   );
 
   return (
@@ -51,6 +58,12 @@ export default function Page() {
           value={inputSearch}
           aria-label="Search factory provisioning records"
           onChange={(event) => setInputSearch(event.target.value)}
+        />
+        <DateRangePicker
+          startDate={startDate}
+          endDate={endDate}
+          onStartChange={setStartDate}
+          onEndChange={setEndDate}
         />
       </div>
       <DataGrid
