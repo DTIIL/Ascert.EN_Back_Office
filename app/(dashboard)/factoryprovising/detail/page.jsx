@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { themeQuartz } from "ag-grid-community";
 import { useRouter } from "next/navigation";
+import DateRangePicker from "../../../../components/DateRangePicker";
+import { isWithinDateRange } from "../../../../lib/dateRange";
 import "../factoryprovisioning.css";
 
 const details1 = [
@@ -139,6 +141,26 @@ const StatusBadge = (props) => (
 
 function Page() {
   const router = useRouter();
+  const [stageStart, setStageStart] = useState("");
+  const [stageEnd, setStageEnd] = useState("");
+  const [eventStart, setEventStart] = useState("");
+  const [eventEnd, setEventEnd] = useState("");
+
+  const filteredStages = useMemo(
+    () =>
+      stageData.filter((row) =>
+        isWithinDateRange(row.completedAt, stageStart, stageEnd),
+      ),
+    [stageStart, stageEnd],
+  );
+
+  const filteredEvents = useMemo(
+    () =>
+      eventData.filter((row) =>
+        isWithinDateRange(row.timestamp, eventStart, eventEnd),
+      ),
+    [eventStart, eventEnd],
+  );
 
   const stageColumnDefs = useMemo(
     () => [
@@ -292,11 +314,19 @@ function Page() {
         {/* Provisioning Stages */}
         <section className="detail-section table-section">
           <div className="detail-section-header">Provisioning Stages</div>
+          <div className="toolbar table-date-toolbar">
+            <DateRangePicker
+              startDate={stageStart}
+              endDate={stageEnd}
+              onStartChange={setStageStart}
+              onEndChange={setStageEnd}
+            />
+          </div>
 
           <div className="provisioning-grid ag-theme-alpine">
             <AgGridReact
               theme={themeQuartz}
-              rowData={stageData}
+              rowData={filteredStages}
               columnDefs={stageColumnDefs}
               defaultColDef={defaultColDef}
               domLayout="autoHeight"
@@ -310,11 +340,19 @@ function Page() {
         {/* Provisioning Events */}
         <section className="detail-section table-section">
           <div className="detail-section-header">Provisioning Events</div>
+          <div className="toolbar table-date-toolbar">
+            <DateRangePicker
+              startDate={eventStart}
+              endDate={eventEnd}
+              onStartChange={setEventStart}
+              onEndChange={setEventEnd}
+            />
+          </div>
 
           <div className="provisioning-grid ag-theme-alpine">
             <AgGridReact
               theme={themeQuartz}
-              rowData={eventData}
+              rowData={filteredEvents}
               columnDefs={eventColumnDefs}
               defaultColDef={defaultColDef}
               domLayout="autoHeight"

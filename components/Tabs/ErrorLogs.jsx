@@ -1,4 +1,10 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import DateRangePicker from "../DateRangePicker";
+import { isWithinDateRange } from "../../lib/dateRange";
 import "./overview.css";
+
 const errorLogs = [
   {
     id: 1,
@@ -33,9 +39,28 @@ const errorLogs = [
     Details: "Signing request Contract.pdf was not completed",
   },
 ];
+
 const ErrorLogs = () => {
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const rows = useMemo(
+    () =>
+      errorLogs.filter((item) =>
+        isWithinDateRange(item.dateTime, startDate, endDate),
+      ),
+    [startDate, endDate],
+  );
+
   return (
     <section className="detail-section attempt-section">
+      <div className="toolbar table-date-toolbar">
+        <DateRangePicker
+          startDate={startDate}
+          endDate={endDate}
+          onStartChange={setStartDate}
+          onEndChange={setEndDate}
+        />
+      </div>
       <div className="attempts-table-wrapper">
         <table className="attempts-table">
           <thead>
@@ -48,7 +73,7 @@ const ErrorLogs = () => {
             </tr>
           </thead>
           <tbody>
-            {errorLogs.map((item) => (
+            {rows.map((item) => (
               <tr key={item.id}>
                 <td>{item.dateTime}</td>
                 <td>{item.source}</td>
@@ -57,6 +82,11 @@ const ErrorLogs = () => {
                 <td>{item.Details}</td>
               </tr>
             ))}
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={5}>No records match this date range.</td>
+              </tr>
+            ) : null}
           </tbody>
         </table>
       </div>

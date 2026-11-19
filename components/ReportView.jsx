@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import DataGrid from "./DataGrid";
+import DateRangePicker from "./DateRangePicker";
 import { StatusRenderer } from "../public/utils";
 import { filterRows } from "../lib/filterRows";
+import { isWithinDateRange } from "../lib/dateRange";
 
 const STATUS_OPTIONS = ["Completed", "Pending", "In Progress", "Failed"];
 
@@ -19,11 +21,20 @@ const columnDefs = [
 export default function ReportView({ title, placeholder, rows }) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const filtered = useMemo(
     () =>
-      filterRows(rows, query, (row) => !status || row.status === status),
-    [rows, query, status],
+      filterRows(rows, query, (row) => {
+        if (status && row.status !== status) return false;
+        return isWithinDateRange(
+          row.lastUpdate ?? row.lastUpdated,
+          startDate,
+          endDate,
+        );
+      }),
+    [rows, query, status, startDate, endDate],
   );
 
   return (
@@ -61,6 +72,12 @@ export default function ReportView({ title, placeholder, rows }) {
             </option>
           ))}
         </select>
+        <DateRangePicker
+          startDate={startDate}
+          endDate={endDate}
+          onStartChange={setStartDate}
+          onEndChange={setEndDate}
+        />
       </div>
       <DataGrid rowData={filtered} columnDefs={columnDefs} />
     </section>
