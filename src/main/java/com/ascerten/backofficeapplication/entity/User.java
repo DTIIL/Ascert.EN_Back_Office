@@ -26,7 +26,8 @@ public class User {
     @Column(name = "mobile_number")
     private Long mobileNumber;
 
-    @Column(name = "username")
+    @Size(max = 25, message = "Username cannot exceed 25 characters")
+    @Column(name = "username", length = 25)
     private String username;
 
     @Column(name = "password")

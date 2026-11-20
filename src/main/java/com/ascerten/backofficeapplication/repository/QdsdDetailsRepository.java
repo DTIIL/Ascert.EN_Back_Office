@@ -95,7 +95,11 @@ public interface QdsdDetailsRepository
                 md.created_date AT TIME ZONE 'Asia/Kolkata',
                 'DD Mon YYYY, HH12:MI AM'
             ) AS "eventDate",
-            CAST(md.status AS varchar) AS "status",
+            CASE md.status
+                WHEN 1 THEN 'Active'
+                WHEN 0 THEN 'Revoked'
+                ELSE CAST(md.status AS varchar)
+            END AS "status",
             NULL::varchar AS "actionName",
             NULL::varchar AS "serialNumber",
             NULL::varchar AS "certificateType",
@@ -140,7 +144,7 @@ public interface QdsdDetailsRepository
             NULL::varchar AS "documentName",
             NULL::varchar AS "signingPlatform",
             NULL::varchar AS "signedDate",
-            NULL::varchar AS "failureReason",
+            COALESCE(dsc.failure_reason, sig.failure_reason) AS "failureReason",
             al.created_date AS sort_date
         FROM public.qdsd_action_log al
         JOIN public.master_qdsd_action mqa
@@ -149,6 +153,30 @@ public interface QdsdDetailsRepository
             ON al.qdsd_id = qd.id
         LEFT JOIN public.mobile_device_details md
             ON qd.mobile_device_id = md.id
+        LEFT JOIN LATERAL (
+            SELECT NULLIF(
+                       (regexp_match(
+                           convert_from(c.envelope, 'UTF8'),
+                           '(^|\\n)failure_reason=([^\\n]*)'
+                       ))[2],
+                       ''
+                   ) AS failure_reason
+            FROM public.qdsd_command c
+            WHERE c.qdsd_id = al.qdsd_id
+              AND c.kind = 'DSC'
+              AND c.created_date <= al.created_date
+            ORDER BY c.created_date DESC, c.id DESC
+            LIMIT 1
+        ) dsc ON mqa.action_name = 'DSC Download Failed'
+        LEFT JOIN LATERAL (
+            SELECT sd.failure_reason
+            FROM public.qdsd_signing_details sd
+            WHERE sd.qdsd_id = al.qdsd_id
+              AND sd.status = 24
+              AND sd.created_date <= al.created_date
+            ORDER BY sd.created_date DESC, sd.id DESC
+            LIMIT 1
+        ) sig ON mqa.action_name = 'Signing Failed'
         WHERE mqa.action_name IN (
             'Pairing Failed',
             'Pairing Request Expired',
@@ -193,31 +221,7 @@ public interface QdsdDetailsRepository
 
     // DSC Download Report
     @Query(value = """
-        WITH latest_download_action AS (
-            SELECT DISTINCT ON (al.qdsd_id)
-                al.id AS action_record_id,
-                al.qdsd_id,
-                mqa.action_name,
-                al.created_date
-            FROM public.qdsd_action_log al
-            JOIN public.master_qdsd_action mqa
-                ON al.action_id = mqa.id
-            WHERE mqa.action_name IN (
-                'DSC Download Approval Requested',
-                'DSC Download Approved',
-                'DSC Download Declined',
-                'DSC Download Started',
-                'DSC Installed',
-                'DSC Download Failed',
-                'DSC Download Approval Expired'
-            )
-            ORDER BY
-                al.qdsd_id,
-                al.created_date DESC,
-                al.id DESC
-        ),
-
-        downloaded_certificates AS (
+        WITH downloaded_certificates AS (
             SELECT
                 cert.id,
                 cert.qdsd_id,
@@ -230,17 +234,13 @@ public interface QdsdDetailsRepository
 
         failed_downloads AS (
             SELECT
-                lda.action_record_id,
-                lda.qdsd_id,
-                lda.created_date
-            FROM latest_download_action lda
-            WHERE lda.action_name = 'DSC Download Failed'
-              AND NOT EXISTS (
-                  SELECT 1
-                  FROM public.qdsd_downloaded_certificates cert
-                  WHERE cert.qdsd_id = lda.qdsd_id
-                    AND cert.status = 1
-              )
+                al.id AS action_record_id,
+                al.qdsd_id,
+                al.created_date
+            FROM public.qdsd_action_log al
+            JOIN public.master_qdsd_action mqa
+                ON al.action_id = mqa.id
+            WHERE mqa.action_name = 'DSC Download Failed'
         )
 
         SELECT

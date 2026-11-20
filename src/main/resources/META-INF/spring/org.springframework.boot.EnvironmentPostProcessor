@@ -1,0 +1,2 @@
+com.ascerten.backofficeapplication.config.ExternalApiConfigEnvironmentPostProcessor
+com.ascerten.backofficeapplication.config.MasterSsoPropertiesEnvironmentPostProcessor

@@ -1,4 +1,3 @@
-
 package com.ascerten.backofficeapplication.repository;
 
 import jakarta.persistence.EntityManager;
@@ -38,19 +37,17 @@ public class QdsdManagerRepository {
                 CASE
                     WHEN ms.status = 'Suspended' THEN 'Suspended'
                     WHEN ms.status = 'Lost' THEN 'Lost'
-                    WHEN q.lifecycle = 'ACTIVE'
+                    WHEN q.lifecycle IN ('ACTIVE', 'BOUND', 'READY')
                          AND cert.status = 1 THEN 'Ready'
-                    WHEN q.lifecycle = 'ACTIVE'
+                    WHEN q.lifecycle IN ('ACTIVE', 'BOUND', 'READY')
                          AND latest_action.action_name = 'DSC Download Failed'
                         THEN 'Error'
-                    WHEN q.lifecycle = 'ACTIVE' THEN 'Waiting for DSC'
+                    WHEN q.lifecycle IN ('ACTIVE', 'BOUND', 'READY') THEN 'Waiting for DSC'
                     ELSE q.lifecycle
                 END AS qdsd_status,
 
-                TO_CHAR(
-                    last_login.last_activity_at AT TIME ZONE 'Asia/Kolkata',
-                    'DD Mon YYYY, HH12:MI AM'
-                ) AS last_activity_at
+                last_login.last_activity_at AT TIME ZONE 'Asia/Kolkata'
+                    AS last_activity_at
 
             FROM qdsd_details q
 
@@ -106,6 +103,26 @@ public class QdsdManagerRepository {
         return entityManager
                 .createNativeQuery(sql)
                 .getResultList();
+    }
+
+
+    // Fetch active pairing statuses from master_qdsd_status
+    public List<String> getActivePairingStatuses() {
+
+        String sql = """
+            SELECT ms.status
+            FROM master_qdsd_status ms
+            WHERE ms.active = 1
+            ORDER BY ms.id
+            """;
+
+        List<?> results = entityManager
+                .createNativeQuery(sql)
+                .getResultList();
+
+        return results.stream()
+                .map(String::valueOf)
+                .toList();
     }
 
 
@@ -204,12 +221,12 @@ public class QdsdManagerRepository {
                 CASE
                     WHEN ms.status = 'Suspended' THEN 'Suspended'
                     WHEN ms.status = 'Lost' THEN 'Lost'
-                    WHEN q.lifecycle = 'ACTIVE'
+                    WHEN q.lifecycle IN ('ACTIVE', 'BOUND', 'READY')
                          AND cert.status = 1 THEN 'Ready'
-                    WHEN q.lifecycle = 'ACTIVE'
+                    WHEN q.lifecycle IN ('ACTIVE', 'BOUND', 'READY')
                          AND latest_action.action_name = 'DSC Download Failed'
                         THEN 'Error'
-                    WHEN q.lifecycle = 'ACTIVE' THEN 'Waiting for DSC'
+                    WHEN q.lifecycle IN ('ACTIVE', 'BOUND', 'READY') THEN 'Waiting for DSC'
                     ELSE q.lifecycle
                 END AS qdsd_status
 
@@ -295,6 +312,12 @@ public class QdsdManagerRepository {
 
     // Fetch Download History for an individual QDSD
     // Includes successful and failed download workflow events.
+    //
+    // An attempt starts with an approval request, or with a download start
+    // that was not preceded by a request/approval (pre-approved or approval
+    // not required). Each attempt is stored by the Cloud API as one
+    // qdsd_command row (kind 'DSC') whose envelope holds key=value lines
+    // such as ca_name, requester_name, certificate_id and failure_reason.
     public List<Object[]> getDownloadHistoryByQdsdId(Long qdsdId) {
 
         String sql = """
@@ -304,7 +327,12 @@ public class QdsdManagerRepository {
                     l.id,
                     l.qdsd_id,
                     l.created_date,
-                    a.action_name
+                    a.action_name,
+
+                    LAG(a.action_name) OVER (
+                        PARTITION BY l.qdsd_id
+                        ORDER BY l.created_date ASC, l.id ASC
+                    ) AS previous_action
 
                 FROM qdsd_action_log l
 
@@ -331,7 +359,18 @@ public class QdsdManagerRepository {
                     created_date,
                     action_name,
 
-                    ROW_NUMBER() OVER (
+                    SUM(
+                        CASE
+                            WHEN previous_action IS NULL THEN 1
+                            WHEN action_name = 'DSC Download Approval Requested' THEN 1
+                            WHEN action_name = 'DSC Download Started'
+                                 AND previous_action NOT IN (
+                                     'DSC Download Approval Requested',
+                                     'DSC Download Approved'
+                                 ) THEN 1
+                            ELSE 0
+                        END
+                    ) OVER (
                         PARTITION BY qdsd_id
                         ORDER BY created_date ASC, id ASC
                     ) AS attempt_number
@@ -348,12 +387,54 @@ public class QdsdManagerRepository {
                 ) AS created_date,
 
                 e.action_name AS status,
-                cert.issuer_name AS ca_name,
-                cert.subscriber_name AS downloaded_by,
+
+                COALESCE(
+                    attempt.ca_name,
+                    attempt_cert.issuer_name,
+                    installed_cert.issuer_name
+                ) AS ca_name,
+
+                COALESCE(
+                    attempt_cert.subscriber_name,
+                    installed_cert.subscriber_name,
+                    attempt.requester_name
+                ) AS downloaded_by,
+
                 e.attempt_number,
-                NULL::varchar AS error_details
+
+                CASE
+                    WHEN e.action_name = 'DSC Download Failed'
+                        THEN attempt.failure_reason
+                END AS error_details
 
             FROM numbered_events e
+
+            LEFT JOIN LATERAL (
+                SELECT
+                    NULLIF((regexp_match(fields.envelope_text, '(^|\\n)ca_name=([^\\n]*)'))[2], '')
+                        AS ca_name,
+                    NULLIF((regexp_match(fields.envelope_text, '(^|\\n)requester_name=([^\\n]*)'))[2], '')
+                        AS requester_name,
+                    NULLIF((regexp_match(fields.envelope_text, '(^|\\n)failure_reason=([^\\n]*)'))[2], '')
+                        AS failure_reason,
+                    NULLIF((regexp_match(fields.envelope_text, '(^|\\n)certificate_id=([0-9]+)'))[2], '')
+                        AS certificate_id
+                FROM qdsd_command c
+                CROSS JOIN LATERAL (
+                    SELECT convert_from(c.envelope, 'UTF8') AS envelope_text
+                ) fields
+                WHERE c.qdsd_id = e.qdsd_id
+                  AND c.kind = 'DSC'
+                  AND c.created_date <= e.created_date
+                ORDER BY
+                    c.created_date DESC,
+                    c.id DESC
+                LIMIT 1
+            ) attempt ON TRUE
+
+            LEFT JOIN qdsd_downloaded_certificates attempt_cert
+                ON attempt_cert.id = CAST(attempt.certificate_id AS bigint)
+               AND attempt_cert.qdsd_id = e.qdsd_id
 
             LEFT JOIN LATERAL (
                 SELECT
@@ -367,7 +448,7 @@ public class QdsdManagerRepository {
                     c.downloaded_date DESC,
                     c.id DESC
                 LIMIT 1
-            ) cert ON e.action_name = 'DSC Installed'
+            ) installed_cert ON e.action_name = 'DSC Installed'
 
             ORDER BY
                 e.created_date DESC,

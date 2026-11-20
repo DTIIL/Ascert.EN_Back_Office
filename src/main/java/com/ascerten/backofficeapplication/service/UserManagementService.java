@@ -98,6 +98,7 @@ public class UserManagementService {
 
     private void validateUser(
             String name,
+            String username,
             String email,
             String mobileNumber,
             Integer roleId,
@@ -112,6 +113,18 @@ public class UserManagementService {
         if (name.trim().length() > 100) {
             throw new IllegalArgumentException(
                     "Name cannot exceed 100 characters."
+            );
+        }
+
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Please enter a username."
+            );
+        }
+
+        if (!username.trim().matches("^[A-Za-z0-9._-]{1,25}$")) {
+            throw new IllegalArgumentException(
+                    "Username can contain only letters, numbers, dots, underscores, and hyphens, up to 25 characters."
             );
         }
 
@@ -174,6 +187,7 @@ public class UserManagementService {
     @Transactional
     public String addUser(
             String name,
+            String username,
             String email,
             String mobileNumber,
             Integer roleId,
@@ -182,6 +196,7 @@ public class UserManagementService {
 
         validateUser(
                 name,
+                username,
                 email,
                 mobileNumber,
                 roleId,
@@ -189,6 +204,7 @@ public class UserManagementService {
         );
 
         String normalizedEmail = email.trim();
+        String normalizedUsername = username.trim();
 
         // Prevent another active user from using the same email.
         if (userRepository.existsByEmailIdIgnoreCaseAndStatus(
@@ -197,6 +213,12 @@ public class UserManagementService {
 
             throw new IllegalArgumentException(
                     "An active user with this email address already exists."
+            );
+        }
+
+        if (userRepository.existsByUsernameIgnoreCase(normalizedUsername)) {
+            throw new IllegalArgumentException(
+                    "A user with this username already exists."
             );
         }
 
@@ -212,13 +234,13 @@ public class UserManagementService {
         User user = new User();
 
         user.setName(name.trim());
+        user.setUsername(normalizedUsername);
         user.setEmailId(normalizedEmail);
         user.setMobileNumber(Long.valueOf(mobileNumber));
         user.setUserRole(roleId);
         user.setStatus(status);
 
         // Store generated password as plain text for the current phase.
-        user.setUsername(null);
         user.setPassword(generatedPassword);
 
         user.setCreatedDate(OffsetDateTime.now());
@@ -234,6 +256,7 @@ public class UserManagementService {
     public void updateUser(
             Long id,
             String name,
+            String username,
             String email,
             String mobileNumber,
             Integer roleId,
@@ -244,6 +267,7 @@ public class UserManagementService {
 
         validateUser(
                 name,
+                username,
                 email,
                 mobileNumber,
                 roleId,
@@ -251,6 +275,7 @@ public class UserManagementService {
         );
 
         String normalizedEmail = email.trim();
+        String normalizedUsername = username.trim();
 
         // Prevent another active user from using the same email.
         // Exclude the current record from the duplicate check.
@@ -264,6 +289,15 @@ public class UserManagementService {
             );
         }
 
+        if (userRepository.existsByUsernameIgnoreCaseAndIdNot(
+                normalizedUsername,
+                id)) {
+
+            throw new IllegalArgumentException(
+                    "A user with this username already exists."
+            );
+        }
+
         if (updatedIp == null || updatedIp.isBlank()) {
             throw new IllegalArgumentException(
                     "Unable to determine the updater IP address."
@@ -271,12 +305,11 @@ public class UserManagementService {
         }
 
         user.setName(name.trim());
+        user.setUsername(normalizedUsername);
         user.setEmailId(normalizedEmail);
         user.setMobileNumber(Long.valueOf(mobileNumber));
         user.setUserRole(roleId);
         user.setStatus(status);
-
-        // Preserve existing username and password.
         user.setUpdatedDate(OffsetDateTime.now());
         user.setUpdatedIp(updatedIp);
 

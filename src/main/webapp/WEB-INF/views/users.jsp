@@ -47,7 +47,7 @@
                      height="32">
 
                 <div class="heading">
-                    <span class="user-name">${userName}</span>
+                    <span class="user-name"><c:out value="${userName}"/></span>
                     <span class="user-role"><c:out value="${userRole}"/></span>
                 </div>
             </button>
@@ -147,6 +147,20 @@
                                        placeholder="Enter full name"
                                        maxlength="150"
                                        value="<c:out value='${editingUser.name}'/>"
+                                       required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="username">Username</label>
+
+                                <input type="text"
+                                       id="username"
+                                       name="username"
+                                       placeholder="Enter username"
+                                       maxlength="25"
+                                       pattern="[A-Za-z0-9._-]{1,25}"
+                                       title="Letters, numbers, dots, underscores, and hyphens, up to 25 characters"
+                                       value="<c:out value='${editingUser.username}'/>"
                                        required>
                             </div>
 
@@ -273,7 +287,7 @@
                     <input type="search"
                            id="userSearch"
                            class="users-search"
-                           placeholder="Search by name, email, or role"
+                           placeholder="Search by name, username, email, or role"
                            aria-label="Search users">
 
                 </div>
@@ -288,6 +302,7 @@
                             <thead>
                                 <tr>
                                     <th>Full Name</th>
+                                    <th>Username</th>
                                     <th>Email</th>
                                     <th>Mobile</th>
                                     <th>Role</th>
@@ -303,6 +318,11 @@
 
                                         <td>
                                             <c:out value="${user.name}"
+                                                   default="—"/>
+                                        </td>
+
+                                        <td>
+                                            <c:out value="${user.username}"
                                                    default="—"/>
                                         </td>
 
@@ -356,7 +376,7 @@
 
                                 <c:if test="${empty users}">
                                     <tr>
-                                        <td colspan="6" class="users-empty">
+                                        <td colspan="7" class="users-empty">
                                             No users found.
                                         </td>
                                     </tr>
@@ -525,7 +545,7 @@
     const lastPageButton = document.getElementById("lastPage");
 
     const allRows = Array.from(tableBody.querySelectorAll("tr"))
-        .filter(row => row.cells.length === 6);
+        .filter(row => row.cells.length === 7);
 
     let currentPage = 1;
 

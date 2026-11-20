@@ -25,6 +25,41 @@
             color: #344563;
             font: inherit;
         }
+
+        /* Date filter styles */
+        .factory-date-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .factory-date-filter label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #344563;
+            font-size: 13px;
+        }
+        .factory-date-filter input[type="date"] {
+            width: 148px;
+            height: 40px;
+            padding: 0 8px;
+            border: 1px solid #d7deea;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #344563;
+            font: inherit;
+            box-sizing: border-box;
+        }
+        .factory-date-clear {
+            height: 40px;
+            padding: 0 12px;
+            border: 1px solid #d7deea;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #344563;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -120,7 +155,7 @@
                     <input type="search"
                            id="searchInput"
                            class="factory-search"
-                           placeholder="Search devices, factories, or stages"
+                           placeholder="Search devices, stages, or statuses"
                            aria-label="Search factory provisioning records">
 
                     <select id="statusFilter"
@@ -133,6 +168,23 @@
                         <option value="lost">Lost</option>
                     </select>
 
+                    <!-- Date Range Filter -->
+                    <div class="factory-date-filter">
+                        <label>
+                            <span>From</span>
+                            <input type="date" id="dateFrom" aria-label="Filter from date">
+                        </label>
+                        <label>
+                            <span>To</span>
+                            <input type="date" id="dateTo" aria-label="Filter to date">
+                        </label>
+                        <button type="button" id="clearDates" class="factory-date-clear" hidden>Clear dates</button>
+                    </div>
+
+                    <p id="dateRangeError" class="date-range-error" role="alert" hidden>
+                        From date cannot be later than To date.
+                    </p>
+
                 </div>
 
                 <!-- Device Table -->
@@ -141,6 +193,16 @@
                     <div class="factory-table-wrapper">
 
                         <table class="factory-table" id="deviceTable">
+
+                            <colgroup>
+                                <col class="col-device">
+                                <col class="col-secure">
+                                <col class="col-factory">
+                                <col class="col-stage">
+                                <col class="col-status">
+                                <col class="col-updated">
+                                <col class="col-action">
+                            </colgroup>
 
                             <thead>
                                 <tr>
@@ -166,9 +228,9 @@
                                             </span>
                                         </td>
 
-                                        <td>Not available</td>
+                                        <td class="factory-unavailable">Not available</td>
 
-                                        <td>Not available</td>
+                                        <td class="factory-unavailable">Not available</td>
 
                                         <td>
                                             <c:out value="${device.lifecycle}"/>
@@ -193,15 +255,17 @@
                                        </td>
 
                                         <td>
-                                            <span class="device-last-updated">
-                                                <c:choose>
-                                                    <c:when test="${not empty device.updatedAt}">
-                                                        <c:out value="${device.updatedAt}"/>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <c:out value="${device.createdAt}"/>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                            <c:choose>
+                                                <c:when test="${not empty device.updatedAt}">
+                                                    <c:set var="lastUpdated" value="${device.updatedAt}"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="lastUpdated" value="${device.createdAt}"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <span class="device-last-updated"
+                                                  data-date="${empty lastUpdated ? '' : lastUpdated.toInstant().toEpochMilli()}">
+                                                <c:out value="${lastUpdated}" default="—"/>
                                             </span>
                                         </td>
 
@@ -334,11 +398,23 @@ document.addEventListener("keydown", function(event) {
 
 });
 
+// Parse a data-date value written as epoch milliseconds.
+function parseEpochDate(rawDate) {
+    const text = (rawDate || "").trim();
+    if (!/^\d+$/.test(text)) return null;
+    const date = new Date(Number(text));
+    return isNaN(date.getTime()) ? null : date;
+}
+
 // Search and Pagination
 (function () {
 
     const searchInput = document.getElementById("searchInput");
     const statusFilter = document.getElementById("statusFilter");
+    const dateFromInput = document.getElementById("dateFrom");
+    const dateToInput = document.getElementById("dateTo");
+    const clearDatesButton = document.getElementById("clearDates");
+    const dateRangeError = document.getElementById("dateRangeError");
 
     const rows = Array.from(
         document.querySelectorAll(".device-row")
@@ -414,16 +490,45 @@ document.addEventListener("keydown", function(event) {
         lastButton.disabled = currentPage >= totalPages;
     }
 
-    // Search and Status Filter
+    // Convert the record timestamp (epoch milliseconds) to YYYY-MM-DD in India time.
+    function getIndiaDateKey(rawDate) {
+        const date = parseEpochDate(rawDate);
+        if (!date) return "";
+        const parts = new Intl.DateTimeFormat("en-CA", {
+            year: "numeric", month: "2-digit", day: "2-digit",
+            timeZone: "Asia/Kolkata"
+        }).formatToParts(date);
+        const year = parts.find(part => part.type === "year").value;
+        const month = parts.find(part => part.type === "month").value;
+        const day = parts.find(part => part.type === "day").value;
+        return year + "-" + month + "-" + day;
+    }
+
+    // Search, Status, and Date Filters
     function filterDevices() {
 
         const searchValue = searchInput.value.toLowerCase().trim();
         const selectedStatus = statusFilter.value.toLowerCase();
+        let fromDate = dateFromInput.value;
+        let toDate = dateToInput.value;
+
+        const invalidRange = fromDate !== "" && toDate !== "" && fromDate > toDate;
+        dateRangeError.hidden = !invalidRange;
+
+        if (invalidRange) {
+            fromDate = "";
+            toDate = "";
+        }
 
         filteredRows = rows.filter(function(row) {
 
-            const matchesSearch =
-                row.innerText.toLowerCase().includes(searchValue);
+            const searchText = Array.from(row.cells)
+                .filter(cell => !cell.classList.contains("factory-unavailable"))
+                .map(cell => cell.innerText)
+                .join(" ")
+                .toLowerCase();
+
+            const matchesSearch = searchText.includes(searchValue);
 
             const statusCell = row.cells[4];
             const rowStatus = statusCell
@@ -433,7 +538,12 @@ document.addEventListener("keydown", function(event) {
             const matchesStatus =
                 selectedStatus === "" || rowStatus === selectedStatus;
 
-            return matchesSearch && matchesStatus;
+            const dateElement = row.querySelector(".device-last-updated");
+            const rowDate = getIndiaDateKey(dateElement ? dateElement.getAttribute("data-date") : "");
+            const matchesFromDate = fromDate === "" || (rowDate !== "" && rowDate >= fromDate);
+            const matchesToDate = toDate === "" || (rowDate !== "" && rowDate <= toDate);
+
+            return matchesSearch && matchesStatus && matchesFromDate && matchesToDate;
         });
 
         currentPage = 1;
@@ -442,6 +552,21 @@ document.addEventListener("keydown", function(event) {
 
     searchInput.addEventListener("input", filterDevices);
     statusFilter.addEventListener("change", filterDevices);
+    dateFromInput.addEventListener("change", filterDevices);
+    dateToInput.addEventListener("change", filterDevices);
+
+    function updateClearDatesButton() {
+        clearDatesButton.hidden = dateFromInput.value === "" && dateToInput.value === "";
+    }
+
+    dateFromInput.addEventListener("change", updateClearDatesButton);
+    dateToInput.addEventListener("change", updateClearDatesButton);
+    clearDatesButton.addEventListener("click", function() {
+        dateFromInput.value = "";
+        dateToInput.value = "";
+        updateClearDatesButton();
+        filterDevices();
+    });
 
     // Page size
     pageSizeSelect.addEventListener("change", function() {
@@ -498,10 +623,9 @@ document.addEventListener("keydown", function(event) {
 
 document.querySelectorAll(".device-last-updated").forEach(function(element) {
 
-    const rawDate = element.textContent.trim();
-    const date = new Date(rawDate);
+    const date = parseEpochDate(element.getAttribute("data-date"));
 
-    if (isNaN(date.getTime())) {
+    if (!date) {
         return;
     }
 

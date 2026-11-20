@@ -7,6 +7,8 @@
 .factory-details-page {
     padding: 0;
     background: transparent;
+    min-width: 0;
+    max-width: 100%;
     min-height: 0;
     color: #17304f;
     font-family: inherit;
@@ -37,16 +39,29 @@
     color: #64748b;
 }
 
-/* Search */
+/* =========================================
+   TOOLBAR
+========================================= */
 
 .factory-toolbar {
     margin-bottom: 14px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    max-width: 100%;
 }
+
+/* Search */
 
 .factory-search {
     width: 360px;
     max-width: 100%;
-    padding: 11px 14px;
+    height: 40px;
+    box-sizing: border-box;
+    padding: 0 14px;
     border: 1px solid #dfe8f2;
     border-radius: 7px;
     outline: none;
@@ -59,31 +74,121 @@
     border-color: #3867d6;
 }
 
-/* Table Card */
+/* Status Filter */
+
+.factory-status-filter {
+    min-width: 160px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #d7deea;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #344563;
+    font: inherit;
+    font-size: 13px;
+    outline: none;
+}
+
+.factory-status-filter:focus {
+    border-color: #3867d6;
+}
+
+/* =========================================
+   DATE RANGE FILTER
+========================================= */
+
+.factory-date-filter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.factory-date-filter label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #344563;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.factory-date-filter input[type="date"] {
+    width: 148px;
+    height: 40px;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border: 1px solid #d7deea;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #344563;
+    font: inherit;
+    font-size: 12px;
+    outline: none;
+}
+
+.factory-date-filter input[type="date"]:focus {
+    border-color: #3867d6;
+}
+
+.factory-date-clear {
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid #d7deea;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #315a8a;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.factory-date-clear:hover {
+    background: #f1f5f9;
+}
+
+.factory-date-clear:focus {
+    outline: 2px solid #3867d6;
+    outline-offset: 2px;
+}
+
+/* =========================================
+   TABLE CARD
+========================================= */
 
 .factory-table-card {
     background: #ffffff;
     border: 1px solid #dfe8f2;
     border-radius: 14px;
     overflow: hidden;
+    min-width: 0;
+    max-width: 100%;
 }
-
-/* Fixed-height independently scrollable table */
 
 .factory-table-wrapper {
     width: 100%;
-    height: 360px;
+    min-width: 0;
+    max-width: 100%;
     overflow: auto;
-    position: relative;
 }
 
 /* Table */
 
 .factory-table {
     width: 100%;
-    min-width: 1000px;
+    table-layout: fixed;
     border-collapse: collapse;
 }
+
+.factory-table col.col-device { width: 15%; }
+.factory-table col.col-secure { width: 16%; }
+.factory-table col.col-factory { width: 14%; }
+.factory-table col.col-stage { width: 15%; }
+.factory-table col.col-status { width: 12%; }
+.factory-table col.col-updated { width: 18%; }
+.factory-table col.col-action { width: 10%; }
 
 .factory-table thead {
     position: sticky;
@@ -97,16 +202,28 @@
     font-size: 12px;
     font-weight: 600;
     text-align: left;
-    padding: 14px;
-    white-space: nowrap;
+    vertical-align: middle;
+    padding: 14px 12px;
+    line-height: 1.3;
     background: #f8fafc;
+    overflow-wrap: anywhere;
 }
 
 .factory-table td {
     color: #243b5a;
     font-size: 12px;
-    padding: 15px 14px;
+    padding: 14px 12px;
     border-top: 1px solid #edf1f6;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.factory-table th:last-child,
+.factory-table td:last-child {
+    text-align: right;
+    overflow: visible;
     white-space: nowrap;
 }
 
@@ -118,7 +235,9 @@
     font-weight: 600;
 }
 
-/* View Button */
+/* =========================================
+   VIEW BUTTON
+========================================= */
 
 .view-action {
     display: inline-flex;
@@ -138,7 +257,9 @@
     background: #2851b5;
 }
 
-/* Status */
+/* =========================================
+   STATUS
+========================================= */
 
 .grid-status {
     display: inline-flex;
@@ -155,23 +276,33 @@
 }
 
 /* Paired Status */
+
 .status-paired {
     background: #e9fbf3;
     color: #078b68;
 }
 
 /* Not Paired Status */
+
 .status-not-paired {
     background: #f1f5f9;
     color: #64748b;
 }
 
-/* Empty Message */
+/* =========================================
+   EMPTY MESSAGE
+========================================= */
 
 .factory-empty {
     padding: 30px;
     text-align: center;
     color: #64748b;
+    font-size: 13px;
+}
+
+.date-range-error {
+    margin: 0;
+    color: #c0392b;
     font-size: 13px;
 }
 
@@ -467,6 +598,28 @@
     }
 
     .factory-search {
+        width: 100%;
+    }
+
+    /* Date filter responsive layout */
+
+    .factory-date-filter {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .factory-date-filter label {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .factory-date-filter input[type="date"] {
+        width: 100%;
+    }
+
+    .factory-date-clear {
         width: 100%;
     }
 

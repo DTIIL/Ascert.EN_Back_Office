@@ -1,10 +1,12 @@
+```
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>${reportTitle} | Ascert.EN</title>
+    <title><c:out value="${reportTitle}"/> | Ascert.EN</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet"
@@ -93,7 +95,7 @@
                      height="32">
 
                 <div class="heading">
-                    <span class="user-name">${userName}</span>
+                    <span class="user-name"><c:out value="${userName}"/></span>
                     <span class="user-role">
                         <c:out value="${userRole}"/>
                     </span>
@@ -151,6 +153,13 @@
                         <h1><c:out value="${reportTitle}"/></h1>
                         <p><c:out value="${reportDescription}"/></p>
                     </div>
+
+                    <span class="report-record-count">
+                        Total records:
+                        <strong id="totalRecords">
+                            <c:out value="${reportRows.size()}"/>
+                        </strong>
+                    </span>
                 </header>
 
                 <!-- Search and Filters -->
@@ -247,14 +256,34 @@
 
                     </div>
 
-                    <span>
-                        Total records:
-                        <strong id="totalRecords">
-                            <c:out value="${reportRows.size()}"/>
-                        </strong>
-                    </span>
+                    <!-- Date Range Filter -->
+                    <div class="report-date-filters">
+                        <label class="report-date-group" for="fromDate">
+                            <span>From</span>
+                            <input type="date"
+                                   id="fromDate"
+                                   class="report-date-input"
+                                   aria-label="Filter from date">
+                        </label>
+
+                        <label class="report-date-group" for="toDate">
+                            <span>To</span>
+                            <input type="date"
+                                   id="toDate"
+                                   class="report-date-input"
+                                   aria-label="Filter to date">
+                        </label>
+
+                        <button type="button" id="clearDates" class="report-clear-dates">
+                            Clear Dates
+                        </button>
+                    </div>
 
                 </div>
+
+                <p id="dateRangeError" class="date-range-error" role="alert" hidden>
+                    From Date cannot be later than To Date.
+                </p>
 
                 <!-- Report Table -->
                 <div class="report-table-wrapper">
@@ -337,7 +366,10 @@
 
                         <c:forEach var="item" items="${reportRows}">
 
-                            <tr>
+                            <c:set var="filterDate"
+                                   value="${reportType eq 'signing' ? (empty item.signedDate ? item.eventDate : item.signedDate) : ''}"/>
+
+                            <tr data-filter-date="${fn:escapeXml(filterDate)}">
 
                                 <!-- Provisioning Rows -->
                                 <c:if test="${reportType == 'provisioning'}">
@@ -436,9 +468,19 @@
                                             <td><c:out value="${item.organization}" default="—"/></td>
 
                                             <td>
-                                                <span class="report-status neutral">
-                                                    <c:out value="${item.status}" default="—"/>
-                                                </span>
+                                                <c:choose>
+                                                    <c:when test="${item.status eq 'Active'}">
+                                                        <span class="report-status">Active</span>
+                                                    </c:when>
+                                                    <c:when test="${item.status eq 'Revoked'}">
+                                                        <span class="report-status danger">Revoked</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="report-status neutral">
+                                                            <c:out value="${item.status}" default="—"/>
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </td>
 
                                             <td><c:out value="${item.eventDate}" default="—"/></td>
@@ -595,6 +637,8 @@
 
 </div>
 
+<script src="${pageContext.request.contextPath}/js/report-dates.js"></script>
+
 <script>
 
     // User menu
@@ -635,6 +679,10 @@
 
     const statusFilter = document.getElementById("statusFilter");
     const actionFilter = document.getElementById("actionFilter");
+    const fromDateInput = document.getElementById("fromDate");
+    const toDateInput = document.getElementById("toDate");
+    const clearDatesButton = document.getElementById("clearDates");
+    const dateRangeError = document.getElementById("dateRangeError");
 
     const allRows = Array.from(
         reportTableBody.querySelectorAll("tr:not(#noRecordsRow)")
@@ -680,10 +728,50 @@
     }
 
 
+    // Get the date column index for the current report type
+    function getDateCellIndex() {
+        switch (reportType) {
+            case "provisioning": return 5;
+            case "usage": return 3;
+            case "device": return 7;
+            case "failure": return 5;
+            case "download": return 7;
+            case "signing": return 8;
+            default: return -1;
+        }
+    }
+
+    // Date used for range filtering; signing rows fall back to the created date
+    function getRowFilterDate(row, dateCellIndex) {
+        const fallbackDate = row.dataset.filterDate || "";
+
+        if (fallbackDate !== "") {
+            return ReportDates.toDateKey(fallbackDate);
+        }
+
+        return dateCellIndex >= 0 && row.cells[dateCellIndex]
+            ? ReportDates.toDateKey(row.cells[dateCellIndex].innerText)
+            : "";
+    }
+
     // Filter records
     function filterReport() {
 
         const searchValue = searchInput.value.toLowerCase().trim();
+        let selectedFromDate = fromDateInput.value;
+        let selectedToDate = toDateInput.value;
+        const dateCellIndex = getDateCellIndex();
+
+        const invalidRange = selectedFromDate !== ""
+            && selectedToDate !== ""
+            && selectedFromDate > selectedToDate;
+
+        dateRangeError.hidden = !invalidRange;
+
+        if (invalidRange) {
+            selectedFromDate = "";
+            selectedToDate = "";
+        }
 
         const selectedStatus = statusFilter
             ? statusFilter.value.toLowerCase()
@@ -701,6 +789,23 @@
 
             let matchesStatus = true;
             let matchesAction = true;
+            let matchesDate = true;
+
+            if (selectedFromDate !== "" || selectedToDate !== "") {
+                const rowDate = getRowFilterDate(row, dateCellIndex);
+
+                // Exclude rows with missing/unparseable dates when a date range is set.
+                if (!rowDate) {
+                    matchesDate = false;
+                } else {
+                    if (selectedFromDate !== "" && rowDate < selectedFromDate) {
+                        matchesDate = false;
+                    }
+                    if (selectedToDate !== "" && rowDate > selectedToDate) {
+                        matchesDate = false;
+                    }
+                }
+            }
 
             if (selectedStatus !== "") {
 
@@ -736,7 +841,7 @@
                 matchesAction = actionText === selectedAction;
             }
 
-            return matchesSearch && matchesStatus && matchesAction;
+            return matchesSearch && matchesStatus && matchesAction && matchesDate;
 
         });
 
@@ -763,9 +868,24 @@
             const numberA = Number(valueA);
             const numberB = Number(valueB);
 
+            const dateA = ReportDates.toSortValue(valueA);
+            const dateB = ReportDates.toSortValue(valueB);
+
             let comparison;
 
-            if (valueA !== "" && valueB !== ""
+            if (dateA !== null || dateB !== null) {
+
+                // Rows without a date always sort after dated rows.
+                if (dateA === null) {
+                    return 1;
+                }
+                if (dateB === null) {
+                    return -1;
+                }
+
+                comparison = dateA - dateB;
+
+            } else if (valueA !== "" && valueB !== ""
                 && !Number.isNaN(numberA)
                 && !Number.isNaN(numberB)) {
 
@@ -920,6 +1040,15 @@
         actionFilter.addEventListener("change", filterReport);
     }
 
+    fromDateInput.addEventListener("change", filterReport);
+    toDateInput.addEventListener("change", filterReport);
+
+    clearDatesButton.addEventListener("click", function() {
+        fromDateInput.value = "";
+        toDateInput.value = "";
+        filterReport();
+    });
+
     // Initial setup
     populateActionFilter();
     renderTable();
@@ -928,3 +1057,4 @@
 
 </body>
 </html>
+```

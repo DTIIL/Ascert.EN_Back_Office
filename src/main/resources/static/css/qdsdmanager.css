@@ -63,6 +63,57 @@
     cursor: pointer;
 }
 
+/* QDSD Manager Date Filters */
+
+.qdsd-date-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.qdsd-date-filter label {
+    color: var(--slate);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.qdsd-date-filter input[type="date"] {
+    height: 42px;
+    width: 150px;
+    padding: 0 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--slate);
+    font-family: inherit;
+    font-size: 12px;
+    box-sizing: border-box;
+}
+
+.qdsd-date-filter input[type="date"]:focus {
+    outline: none;
+    border-color: var(--blue);
+}
+
+/* Clear Dates button */
+.qdsd-clear-date-button {
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--slate);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.qdsd-clear-date-button:hover {
+    background: var(--sand);
+}
+
 .qdsd-filter-button,
 .qdsd-reset-button {
     height: 42px;
@@ -257,6 +308,25 @@
     background: var(--sand);
 }
 
+.pagination-link.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.pagination-link.disabled:hover {
+    background: transparent;
+}
+
+.qdsd-validation-message {
+    margin: 0 0 12px;
+    padding: 10px 14px;
+    border: 1px solid #f5c2c0;
+    border-radius: 7px;
+    background: #fdeaea;
+    color: #c0392b;
+    font-size: 13px;
+}
+
 /* Responsive */
 
 @media (max-width: 720px) {
@@ -278,5 +348,19 @@
     .qdsd-pagination {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .qdsd-date-filter {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .qdsd-date-filter input[type="date"] {
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .qdsd-clear-date-button {
+        flex: 1;
     }
 }

@@ -4,14 +4,18 @@
 ================================ */
 
 .reports-section {
-    padding: 28px;
+    padding: 0;
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .reports-page-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
     margin-bottom: 28px;
 }
 
@@ -173,36 +177,97 @@
 
 .report-toolbar {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 16px;
-    margin: 22px 0;
+    gap: 12px;
+    margin: 18px 0 14px;
+    min-width: 0;
+    max-width: 100%;
     color: #65738a;
     font-size: 13px;
 }
-
-.report-toolbar input {
-    width: min(360px, 100%);
-    padding: 12px 14px;
-    border: 1px solid #d7deea;
-    border-radius: 7px;
-    background: #ffffff;
-    font-size: 14px;
-    outline: none;
-}
-
-.report-toolbar input:focus {
-    border-color: #1764ff;
-}
-
-
-/* Provisioning Report Filters */
 
 .report-filters {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex: 0 0 auto;
     flex-wrap: wrap;
+    min-width: 0;
+}
+
+/* ================================
+   Report Date Filters
+================================ */
+
+.report-date-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.date-range-error {
+    margin: -4px 0 12px;
+    color: #c0392b;
+    font-size: 13px;
+}
+
+.report-date-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: #526078;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.report-toolbar .report-date-input {
+    width: 148px;
+    height: 41px;
+    padding: 0 10px;
+    border: 1px solid #d7deea;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #202938;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.report-toolbar .report-date-input:focus {
+    border-color: #1764ff;
+}
+
+.report-clear-dates {
+    height: 41px;
+    padding: 0 14px;
+    border: 1px solid #d7deea;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #344d73;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.report-clear-dates:hover {
+    background: #f3f7ff;
+    border-color: #b9d0ff;
+}
+
+.report-record-count {
+    white-space: nowrap;
+    color: #65738a;
+    font-size: 13px;
+    align-self: center;
 }
 
 .report-toolbar .report-search,
@@ -219,12 +284,12 @@
 }
 
 .report-toolbar .report-search {
-    width: 360px;
+    width: 240px;
     max-width: 100%;
 }
 
 .report-toolbar .report-status-filter {
-    width: 300px;
+    width: 190px;
     max-width: 100%;
     cursor: pointer;
 }
@@ -241,6 +306,8 @@
 
 .report-table-wrapper {
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
     overflow-x: auto;
     background: #ffffff;
     border: 1px solid #e1e5ec;
@@ -381,23 +448,26 @@
         grid-template-columns: 1fr;
     }
 
-    .reports-section {
-        padding: 18px;
-    }
-
-    .report-toolbar {
+    .report-toolbar,
+    .report-filters,
+    .report-date-filters {
         align-items: stretch;
         flex-direction: column;
     }
 
-    .report-filters {
+    .report-date-group {
         width: 100%;
-        flex-direction: column;
     }
 
     .report-toolbar .report-search,
-    .report-toolbar .report-status-filter {
+    .report-toolbar .report-status-filter,
+    .report-toolbar .report-date-input,
+    .report-clear-dates {
         width: 100%;
+    }
+
+    .report-record-count {
+        align-self: flex-start;
     }
 
     .report-pagination {

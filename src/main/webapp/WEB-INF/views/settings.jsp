@@ -45,7 +45,7 @@
                      height="32">
 
                 <div class="heading">
-                    <span class="user-name">${userName}</span>
+                    <span class="user-name"><c:out value="${userName}"/></span>
                     <span class="user-role"><c:out value="${userRole}"/></span>
                 </div>
             </button>
@@ -93,7 +93,7 @@
                         <dl>
                             <div>
                                 <dt>Name</dt>
-                                <dd>${userName}</dd>
+                                <dd><c:out value="${userName}"/></dd>
                             </div>
 
                             <div>
@@ -179,7 +179,7 @@
                             </c:if>
 
                             <c:if test="${not empty errorMessage}">
-                                <p class="settings-error">${errorMessage}</p>
+                                <p class="settings-error"><c:out value="${errorMessage}"/></p>
                             </c:if>
 
                         </form>

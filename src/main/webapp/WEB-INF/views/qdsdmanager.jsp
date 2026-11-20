@@ -194,18 +194,20 @@
                                     <label>
                                         <input type="radio"
                                                name="pairingStatus"
-                                               value="Paired"
-                                               ${selectedPairingStatus eq 'Paired' ? 'checked' : ''}>
-                                        Paired
+                                               value=""
+                                               ${empty selectedPairingStatus ? 'checked' : ''}>
+                                        All
                                     </label>
 
-                                    <label>
-                                        <input type="radio"
-                                               name="pairingStatus"
-                                               value="Not Paired"
-                                               ${selectedPairingStatus eq 'Not Paired' ? 'checked' : ''}>
-                                        Not Paired
-                                    </label>
+                                    <c:forEach var="option" items="${pairingStatusOptions}">
+                                        <label>
+                                            <input type="radio"
+                                                   name="pairingStatus"
+                                                   value="<c:out value='${option}'/>"
+                                                   ${selectedPairingStatus eq option ? 'checked' : ''}>
+                                            <c:out value="${option}"/>
+                                        </label>
+                                    </c:forEach>
 
                                 </div>
 
@@ -219,26 +221,20 @@
                                     <label>
                                         <input type="radio"
                                                name="downloadStatus"
-                                               value="Downloaded"
-                                               ${selectedDownloadStatus eq 'Downloaded' ? 'checked' : ''}>
-                                        Downloaded
+                                               value=""
+                                               ${empty selectedDownloadStatus ? 'checked' : ''}>
+                                        All
                                     </label>
 
-                                    <label>
-                                        <input type="radio"
-                                               name="downloadStatus"
-                                               value="Pending"
-                                               ${selectedDownloadStatus eq 'Pending' ? 'checked' : ''}>
-                                        Pending
-                                    </label>
-
-                                    <label>
-                                        <input type="radio"
-                                               name="downloadStatus"
-                                               value="Download Failed"
-                                               ${selectedDownloadStatus eq 'Download Failed' ? 'checked' : ''}>
-                                        Download Failed
-                                    </label>
+                                    <c:forEach var="option" items="${downloadStatusOptions}">
+                                        <label>
+                                            <input type="radio"
+                                                   name="downloadStatus"
+                                                   value="<c:out value='${option}'/>"
+                                                   ${selectedDownloadStatus eq option ? 'checked' : ''}>
+                                            <c:out value="${option}"/>
+                                        </label>
+                                    </c:forEach>
 
                                 </div>
 
@@ -252,40 +248,39 @@
                                     <label>
                                         <input type="radio"
                                                name="qdsdStatus"
-                                               value="Ready"
-                                               ${selectedQdsdStatus eq 'Ready' ? 'checked' : ''}>
-                                        Ready
+                                               value=""
+                                               ${empty selectedQdsdStatus ? 'checked' : ''}>
+                                        All
                                     </label>
 
-                                    <label>
-                                        <input type="radio"
-                                               name="qdsdStatus"
-                                               value="Waiting for DSC"
-                                               ${selectedQdsdStatus eq 'Waiting for DSC' ? 'checked' : ''}>
-                                        Waiting for DSC
-                                    </label>
-
-                                    <label>
-                                        <input type="radio"
-                                               name="qdsdStatus"
-                                               value="Error"
-                                               ${selectedQdsdStatus eq 'Error' ? 'checked' : ''}>
-                                        Error
-                                    </label>
-
-                                    <label>
-                                        <input type="radio"
-                                               name="qdsdStatus"
-                                               value="MANUFACTURING"
-                                               ${selectedQdsdStatus eq 'MANUFACTURING' ? 'checked' : ''}>
-                                        MANUFACTURING
-                                    </label>
+                                    <c:forEach var="option" items="${qdsdStatusOptions}">
+                                        <label>
+                                            <input type="radio"
+                                                   name="qdsdStatus"
+                                                   value="<c:out value='${option}'/>"
+                                                   ${selectedQdsdStatus eq option ? 'checked' : ''}>
+                                            <c:out value="${option}"/>
+                                        </label>
+                                    </c:forEach>
 
                                 </div>
 
                             </div>
                         </details>
 
+                    </div>
+
+                    <!-- Date Range Filter -->
+                    <div class="qdsd-date-filter">
+                        <label class="qdsd-date-field">
+                            <span>From Date</span>
+                            <input type="date" name="fromDate" class="qdsd-date-input" value="<c:out value='${fromDate}'/>" aria-label="Filter from date">
+                        </label>
+                        <label class="qdsd-date-field">
+                            <span>To Date</span>
+                            <input type="date" name="toDate" class="qdsd-date-input" value="<c:out value='${toDate}'/>" aria-label="Filter to date">
+                        </label>
+                        <button type="button" class="qdsd-date-clear" id="clearQdsdDates">Clear Dates</button>
                     </div>
 
                     <button type="submit" class="qdsd-filter-button">
@@ -298,6 +293,19 @@
                     </a>
 
                 </form>
+
+                <!-- Validation Messages -->
+                <c:if test="${not empty dateError}">
+                    <p class="qdsd-validation-message" role="alert">
+                        <c:out value="${dateError}"/>
+                    </p>
+                </c:if>
+
+                <c:if test="${param.error eq 'notFound'}">
+                    <p class="qdsd-validation-message" role="alert">
+                        The requested QDSD record was not found.
+                    </p>
+                </c:if>
 
                 <!-- QDSD Table -->
                 <div class="qdsd-table-card">
@@ -425,8 +433,8 @@
                             <span class="qdsd-pagination-info">
                                 <c:choose>
                                     <c:when test="${totalRecords > 0}">
-                                        <c:out value="${(currentPage - 1) * 12 + 1}"/> to
-                                        <c:out value="${currentPage * 12 > totalRecords ? totalRecords : currentPage * 12}"/> of
+                                        <c:out value="${(currentPage - 1) * pageSize + 1}"/> to
+                                        <c:out value="${currentPage * pageSize > totalRecords ? totalRecords : currentPage * pageSize}"/> of
                                         <c:out value="${totalRecords}"/>
                                     </c:when>
                                     <c:otherwise>0 to 0 of 0</c:otherwise>
@@ -438,6 +446,12 @@
                                 <c:url var="firstPageUrl" value="/qdsdmanager">
                                     <c:param name="page" value="1"/>
                                     <c:param name="search" value="${searchTerm}"/>
+                                    <c:if test="${not empty fromDate}">
+                                        <c:param name="fromDate" value="${fromDate}"/>
+                                    </c:if>
+                                    <c:if test="${not empty toDate}">
+                                        <c:param name="toDate" value="${toDate}"/>
+                                    </c:if>
                                     <c:if test="${not empty selectedPairingStatus}">
                                         <c:param name="pairingStatus" value="${selectedPairingStatus}"/>
                                     </c:if>
@@ -448,12 +462,26 @@
                                         <c:param name="qdsdStatus" value="${selectedQdsdStatus}"/>
                                     </c:if>
                                 </c:url>
-                                <a class="pagination-link ${currentPage <= 1 ? 'disabled' : ''}"
-                                   href="${firstPageUrl}" aria-label="First page" title="First page">|&lt;</a>
+                                <c:choose>
+                                    <c:when test="${currentPage <= 1}">
+                                        <span class="pagination-link disabled" aria-disabled="true"
+                                              aria-label="First page" title="First page">|&lt;</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a class="pagination-link"
+                                           href="${firstPageUrl}" aria-label="First page" title="First page">|&lt;</a>
+                                    </c:otherwise>
+                                </c:choose>
 
                                 <c:url var="previousUrl" value="/qdsdmanager">
                                     <c:param name="page" value="${currentPage > 1 ? currentPage - 1 : 1}"/>
                                     <c:param name="search" value="${searchTerm}"/>
+                                    <c:if test="${not empty fromDate}">
+                                        <c:param name="fromDate" value="${fromDate}"/>
+                                    </c:if>
+                                    <c:if test="${not empty toDate}">
+                                        <c:param name="toDate" value="${toDate}"/>
+                                    </c:if>
                                     <c:if test="${not empty selectedPairingStatus}">
                                         <c:param name="pairingStatus" value="${selectedPairingStatus}"/>
                                     </c:if>
@@ -464,8 +492,16 @@
                                         <c:param name="qdsdStatus" value="${selectedQdsdStatus}"/>
                                     </c:if>
                                 </c:url>
-                                <a class="pagination-link ${currentPage <= 1 ? 'disabled' : ''}"
-                                   href="${previousUrl}" aria-label="Previous page" title="Previous page">&lt;</a>
+                                <c:choose>
+                                    <c:when test="${currentPage <= 1}">
+                                        <span class="pagination-link disabled" aria-disabled="true"
+                                              aria-label="Previous page" title="Previous page">&lt;</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a class="pagination-link"
+                                           href="${previousUrl}" aria-label="Previous page" title="Previous page">&lt;</a>
+                                    </c:otherwise>
+                                </c:choose>
 
                                 <span class="qdsd-current-page">
                                     Page <c:out value="${currentPage}"/> of <c:out value="${totalPages}"/>
@@ -474,6 +510,12 @@
                                 <c:url var="nextUrl" value="/qdsdmanager">
                                     <c:param name="page" value="${currentPage < totalPages ? currentPage + 1 : totalPages}"/>
                                     <c:param name="search" value="${searchTerm}"/>
+                                    <c:if test="${not empty fromDate}">
+                                        <c:param name="fromDate" value="${fromDate}"/>
+                                    </c:if>
+                                    <c:if test="${not empty toDate}">
+                                        <c:param name="toDate" value="${toDate}"/>
+                                    </c:if>
                                     <c:if test="${not empty selectedPairingStatus}">
                                         <c:param name="pairingStatus" value="${selectedPairingStatus}"/>
                                     </c:if>
@@ -484,12 +526,26 @@
                                         <c:param name="qdsdStatus" value="${selectedQdsdStatus}"/>
                                     </c:if>
                                 </c:url>
-                                <a class="pagination-link ${currentPage >= totalPages ? 'disabled' : ''}"
-                                   href="${nextUrl}" aria-label="Next page" title="Next page">&gt;</a>
+                                <c:choose>
+                                    <c:when test="${currentPage >= totalPages}">
+                                        <span class="pagination-link disabled" aria-disabled="true"
+                                              aria-label="Next page" title="Next page">&gt;</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a class="pagination-link"
+                                           href="${nextUrl}" aria-label="Next page" title="Next page">&gt;</a>
+                                    </c:otherwise>
+                                </c:choose>
 
                                 <c:url var="lastPageUrl" value="/qdsdmanager">
                                     <c:param name="page" value="${totalPages}"/>
                                     <c:param name="search" value="${searchTerm}"/>
+                                    <c:if test="${not empty fromDate}">
+                                        <c:param name="fromDate" value="${fromDate}"/>
+                                    </c:if>
+                                    <c:if test="${not empty toDate}">
+                                        <c:param name="toDate" value="${toDate}"/>
+                                    </c:if>
                                     <c:if test="${not empty selectedPairingStatus}">
                                         <c:param name="pairingStatus" value="${selectedPairingStatus}"/>
                                     </c:if>
@@ -500,8 +556,16 @@
                                         <c:param name="qdsdStatus" value="${selectedQdsdStatus}"/>
                                     </c:if>
                                 </c:url>
-                                <a class="pagination-link ${currentPage >= totalPages ? 'disabled' : ''}"
-                                   href="${lastPageUrl}" aria-label="Last page" title="Last page">&gt;|</a>
+                                <c:choose>
+                                    <c:when test="${currentPage >= totalPages}">
+                                        <span class="pagination-link disabled" aria-disabled="true"
+                                              aria-label="Last page" title="Last page">&gt;|</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a class="pagination-link"
+                                           href="${lastPageUrl}" aria-label="Last page" title="Last page">&gt;|</a>
+                                    </c:otherwise>
+                                </c:choose>
 
                             </div>
                         </div>
@@ -537,6 +601,13 @@
             menu.hidden = true;
         }
 
+    });
+
+    document.getElementById("clearQdsdDates").addEventListener("click", function() {
+        const form = this.closest("form");
+        form.querySelector('[name="fromDate"]').value = "";
+        form.querySelector('[name="toDate"]').value = "";
+        form.submit();
     });
 
 </script>

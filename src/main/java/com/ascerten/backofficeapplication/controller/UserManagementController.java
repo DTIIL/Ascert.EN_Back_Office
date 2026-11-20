@@ -80,6 +80,7 @@ public class UserManagementController {
     @PostMapping("/user/add")
     public String addUser(
             @RequestParam String name,
+            @RequestParam String username,
             @RequestParam String emailId,
             @RequestParam String mobileNumber,
             @RequestParam Integer userRole,
@@ -93,6 +94,7 @@ public class UserManagementController {
             String generatedPassword =
                     userManagementService.addUser(
                             name,
+                            username,
                             emailId,
                             mobileNumber,
                             userRole,
@@ -128,6 +130,7 @@ public class UserManagementController {
     public String updateUser(
             @RequestParam Long id,
             @RequestParam String name,
+            @RequestParam String username,
             @RequestParam String emailId,
             @RequestParam String mobileNumber,
             @RequestParam Integer userRole,
@@ -140,6 +143,7 @@ public class UserManagementController {
             userManagementService.updateUser(
                     id,
                     name,
+                    username,
                     emailId,
                     mobileNumber,
                     userRole,

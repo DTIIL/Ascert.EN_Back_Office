@@ -46,7 +46,7 @@
                      height="32">
 
                 <div class="heading">
-                    <span class="user-name">${userName}</span>
+                    <span class="user-name"><c:out value="${userName}"/></span>
                     <span class="user-role"><c:out value="${userRole}"/></span>
                 </div>
             </button>

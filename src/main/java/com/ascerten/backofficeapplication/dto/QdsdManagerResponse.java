@@ -1,5 +1,7 @@
-
 package com.ascerten.backofficeapplication.dto;
+
+
+import java.time.LocalDate;
 
 public class QdsdManagerResponse {
 
@@ -12,6 +14,7 @@ public class QdsdManagerResponse {
     private String downloadStatus;
     private String qdsdStatus;
     private String lastUsed;
+    private LocalDate lastUsedDate;
 
     public QdsdManagerResponse() {
     }
@@ -38,75 +41,34 @@ public class QdsdManagerResponse {
         this.lastUsed = lastUsed;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getQdsdId() {
-        return qdsdId;
-    }
+    public String getQdsdId() { return qdsdId; }
+    public void setQdsdId(String qdsdId) { this.qdsdId = qdsdId; }
 
-    public void setQdsdId(String qdsdId) {
-        this.qdsdId = qdsdId;
-    }
+    public String getSerialNumber() { return serialNumber; }
+    public void setSerialNumber(String serialNumber) { this.serialNumber = serialNumber; }
 
-    public String getSerialNumber() {
-        return serialNumber;
-    }
+    public String getAssignedUser() { return assignedUser; }
+    public void setAssignedUser(String assignedUser) { this.assignedUser = assignedUser; }
 
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
+    public String getOrganization() { return organization; }
+    public void setOrganization(String organization) { this.organization = organization; }
 
-    public String getAssignedUser() {
-        return assignedUser;
-    }
+    public String getPairingStatus() { return pairingStatus; }
+    public void setPairingStatus(String pairingStatus) { this.pairingStatus = pairingStatus; }
 
-    public void setAssignedUser(String assignedUser) {
-        this.assignedUser = assignedUser;
-    }
+    public String getDownloadStatus() { return downloadStatus; }
+    public void setDownloadStatus(String downloadStatus) { this.downloadStatus = downloadStatus; }
 
-    public String getOrganization() {
-        return organization;
-    }
+    public String getQdsdStatus() { return qdsdStatus; }
+    public void setQdsdStatus(String qdsdStatus) { this.qdsdStatus = qdsdStatus; }
 
-    public void setOrganization(String organization) {
-        this.organization = organization;
-    }
+    public String getLastUsed() { return lastUsed; }
+    public void setLastUsed(String lastUsed) { this.lastUsed = lastUsed; }
 
-    public String getPairingStatus() {
-        return pairingStatus;
-    }
-
-    public void setPairingStatus(String pairingStatus) {
-        this.pairingStatus = pairingStatus;
-    }
-
-    public String getDownloadStatus() {
-        return downloadStatus;
-    }
-
-    public void setDownloadStatus(String downloadStatus) {
-        this.downloadStatus = downloadStatus;
-    }
-
-    public String getQdsdStatus() {
-        return qdsdStatus;
-    }
-
-    public void setQdsdStatus(String qdsdStatus) {
-        this.qdsdStatus = qdsdStatus;
-    }
-
-    public String getLastUsed() {
-        return lastUsed;
-    }
-
-    public void setLastUsed(String lastUsed) {
-        this.lastUsed = lastUsed;
-    }
+    public LocalDate getLastUsedDate() { return lastUsedDate; }
+    public void setLastUsedDate(LocalDate lastUsedDate) { this.lastUsedDate = lastUsedDate; }
 }

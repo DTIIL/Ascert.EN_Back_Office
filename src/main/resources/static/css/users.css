@@ -235,7 +235,7 @@
 
 .users-table {
     width: 100%;
-    min-width: 850px;
+    min-width: 980px;
     border-collapse: collapse;
     table-layout: fixed;
     font-size: 13px;
@@ -282,23 +282,27 @@
 }
 
 .users-table th:nth-child(2) {
-    width: 17%;
+    width: 14%;
 }
 
 .users-table th:nth-child(3) {
-    width: 16%;
+    width: 20%;
 }
 
 .users-table th:nth-child(4) {
-    width: 16%;
+    width: 14%;
 }
 
 .users-table th:nth-child(5) {
-    width: 16%;
+    width: 14%;
 }
 
 .users-table th:nth-child(6) {
-    width: 19%;
+    width: 12%;
+}
+
+.users-table th:nth-child(7) {
+    width: 10%;
 }
 
 /* =========================================

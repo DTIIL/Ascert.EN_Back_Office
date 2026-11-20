@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### External API config (real credentials stay on the server or the laptop) ###
+api.properties

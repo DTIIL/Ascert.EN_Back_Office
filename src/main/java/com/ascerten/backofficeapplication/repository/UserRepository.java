@@ -31,4 +31,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             Short status,
             Long id
     );
+
+    boolean existsByUsernameIgnoreCase(String username);
+
+    boolean existsByUsernameIgnoreCaseAndIdNot(String username, Long id);
 }
