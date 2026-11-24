@@ -1,4 +1,4 @@
-<p class="grid-empty" hidden>No records match your search.</p>
+<p class="grid-empty" hidden>No records match your filters.</p>
 <div class="grid-pager">
   <span class="grid-pager-info"></span>
   <label>

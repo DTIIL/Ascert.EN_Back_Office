@@ -14,6 +14,9 @@
       aria-label="Search factory provisioning records"
       data-grid-search="#factory-grid"
     />
+    <jsp:include page="/WEB-INF/jsp/includes/date-range.jsp">
+      <jsp:param name="grid" value="#factory-grid" />
+    </jsp:include>
   </div>
   <div class="data-grid" id="factory-grid">
     <table class="data-table">
@@ -30,7 +33,7 @@
       </thead>
       <tbody>
         <c:forEach var="row" items="${devices}">
-          <tr class="data-row" data-href="${ctx}/factoryprovising/detail" data-filter="${fn:escapeXml(row.provisioningStatus)}">
+          <tr class="data-row" data-href="${ctx}/factoryprovising/detail" data-filter="${fn:escapeXml(row.provisioningStatus)}" data-date="${fn:escapeXml(row.lastUpdated)}">
             <td><c:out value="${row.deviceId}" /></td>
             <td><c:out value="${row.secureElementId}" /></td>
             <td><c:out value="${row.factoryId}" /></td>

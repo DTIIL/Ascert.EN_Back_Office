@@ -34,6 +34,9 @@
         <option value="Error">Error</option>
       </optgroup>
     </select>
+    <jsp:include page="/WEB-INF/jsp/includes/date-range.jsp">
+      <jsp:param name="grid" value="#qdsd-grid" />
+    </jsp:include>
   </div>
 
   <div class="data-grid" id="qdsd-grid">
@@ -55,7 +58,8 @@
         <c:forEach var="row" items="${devices}">
           <tr class="data-row"
               data-href="${ctx}/qdsdmanager/qdsdDetails"
-              data-filter="${fn:escapeXml(row.pairingStatus)}|${fn:escapeXml(row.downloadStatus)}|${fn:escapeXml(row.qdsdStatus)}">
+              data-filter="${fn:escapeXml(row.pairingStatus)}|${fn:escapeXml(row.downloadStatus)}|${fn:escapeXml(row.qdsdStatus)}"
+              data-date="${fn:escapeXml(row.lastUsed)}">
             <td><c:out value="${row.qdsdId}" /></td>
             <td><c:out value="${row.serialNumber}" /></td>
             <td><c:out value="${row.assignedUser}" /></td>

@@ -26,6 +26,9 @@
       <option value="In Progress">In Progress</option>
       <option value="Failed">Failed</option>
     </select>
+    <jsp:include page="/WEB-INF/jsp/includes/date-range.jsp">
+      <jsp:param name="grid" value="#report-grid" />
+    </jsp:include>
   </div>
   <div class="data-grid" id="report-grid">
     <table class="data-table">
@@ -40,7 +43,7 @@
       </thead>
       <tbody>
         <c:forEach var="row" items="${rows}">
-          <tr class="data-row" data-filter="${fn:escapeXml(row.status)}">
+          <tr class="data-row" data-filter="${fn:escapeXml(row.status)}" data-date="${fn:escapeXml(row.lastUpdate)}">
             <td><c:out value="${row.deviceId}" /></td>
             <td><c:out value="${row.factoryId}" /></td>
             <td><c:out value="${row.currentStage}" /></td>

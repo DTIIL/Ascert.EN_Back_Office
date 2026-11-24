@@ -92,8 +92,13 @@
 
     <div id="panel-download" role="tabpanel" aria-labelledby="tab-download" class="tab-panel" hidden>
       <section class="detail-section attempts-section">
+        <div class="toolbar table-date-toolbar" data-date-filter="#download-table">
+          <jsp:include page="/WEB-INF/jsp/includes/date-range.jsp">
+            <jsp:param name="grid" value="#download-table" />
+          </jsp:include>
+        </div>
         <div class="attempts-table-wrapper">
-          <table class="attempts-table">
+          <table class="attempts-table" id="download-table">
             <thead>
               <tr>
                 <th>Date &amp; time</th>
@@ -105,7 +110,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr data-date="04 Sep 2026 01:02 PM">
                 <td>04 Sep 2026 01:02 PM</td>
                 <td><span class="status-badge status-failed">Failed</span></td>
                 <td>ABC Certifying Authority</td>
@@ -113,7 +118,7 @@
                 <td>1</td>
                 <td class="attempt-error">No pre-approval for this DSC download.</td>
               </tr>
-              <tr>
+              <tr data-date="05 Sep 2026 10:44 AM">
                 <td>05 Sep 2026 10:44 AM</td>
                 <td><span class="status-badge status-failed">Failed</span></td>
                 <td>ABC Certifying Authority</td>
@@ -121,13 +126,16 @@
                 <td>2</td>
                 <td class="attempt-error">Key generation refused. Ask the Subscriber to pre-approve, then check again.</td>
               </tr>
-              <tr>
+              <tr data-date="06 Sep 2026 03:18 PM">
                 <td>06 Sep 2026 03:18 PM</td>
                 <td><span class="status-badge status-failed">Failed</span></td>
                 <td>ABC Certifying Authority</td>
                 <td>Neha Singh</td>
                 <td>3</td>
                 <td class="attempt-error">Download failed. Certificate was not installed.</td>
+              </tr>
+              <tr class="date-empty" hidden>
+                <td colspan="6">No records match this date range.</td>
               </tr>
             </tbody>
           </table>
@@ -137,8 +145,13 @@
 
     <div id="panel-signing" role="tabpanel" aria-labelledby="tab-signing" class="tab-panel" hidden>
       <section class="detail-section attempts-section">
+        <div class="toolbar table-date-toolbar" data-date-filter="#signing-table">
+          <jsp:include page="/WEB-INF/jsp/includes/date-range.jsp">
+            <jsp:param name="grid" value="#signing-table" />
+          </jsp:include>
+        </div>
         <div class="attempts-table-wrapper">
-          <table class="attempts-table">
+          <table class="attempts-table" id="signing-table">
             <thead>
               <tr>
                 <th>Signed at</th>
@@ -149,12 +162,15 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr data-date="04 Sep 2026 01:02 PM">
                 <td>04 Sep 2026 01:02 PM</td>
                 <td>contract.pdf</td>
                 <td><span class="status-badge status-failed">Failed</span></td>
                 <td>ABC Certifying Authority</td>
                 <td class="attempt-error">No pre-approval for this DSC download.</td>
+              </tr>
+              <tr class="date-empty" hidden>
+                <td colspan="5">No records match this date range.</td>
               </tr>
             </tbody>
           </table>
@@ -164,8 +180,13 @@
 
     <div id="panel-errors" role="tabpanel" aria-labelledby="tab-errors" class="tab-panel" hidden>
       <section class="detail-section attempt-section">
+        <div class="toolbar table-date-toolbar" data-date-filter="#error-table">
+          <jsp:include page="/WEB-INF/jsp/includes/date-range.jsp">
+            <jsp:param name="grid" value="#error-table" />
+          </jsp:include>
+        </div>
         <div class="attempts-table-wrapper">
-          <table class="attempts-table">
+          <table class="attempts-table" id="error-table">
             <thead>
               <tr>
                 <th>Time</th>
@@ -176,33 +197,36 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr data-date="04 Sep 2026 01:02 PM">
                 <td>04 Sep 2026 01:02 PM</td>
                 <td>Download</td>
                 <td>NO_PREAPPROVAL</td>
                 <td>NO Pre approval for this DSC Download</td>
                 <td>CA Page styed open.subscriber had no pre approved</td>
               </tr>
-              <tr>
+              <tr data-date="04 Sep 2026 01:02 PM">
                 <td>04 Sep 2026 01:02 PM</td>
                 <td>Download</td>
                 <td>KEYGEN_REFUSED</td>
                 <td>key generation refused</td>
                 <td>Ask the subscriber to pre-approve then check again</td>
               </tr>
-              <tr>
+              <tr data-date="04 Sep 2026 01:02 PM">
                 <td>04 Sep 2026 01:02 PM</td>
                 <td>Download</td>
                 <td>DOWNLOAD_FAILED</td>
                 <td>Download failed.certificate was not installed</td>
                 <td>three attempts QDSD status error</td>
               </tr>
-              <tr>
+              <tr data-date="04 Sep 2026 01:02 PM">
                 <td>04 Sep 2026 01:02 PM</td>
                 <td>Signing</td>
                 <td>NO_DSC</td>
                 <td>No DSC yet</td>
                 <td>Signing request Contract.pdf was not completed</td>
+              </tr>
+              <tr class="date-empty" hidden>
+                <td colspan="5">No records match this date range.</td>
               </tr>
             </tbody>
           </table>
@@ -212,8 +236,13 @@
 
     <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" class="tab-panel" hidden>
       <section class="detail-section attempt-section">
+        <div class="toolbar table-date-toolbar" data-date-filter="#activity-table">
+          <jsp:include page="/WEB-INF/jsp/includes/date-range.jsp">
+            <jsp:param name="grid" value="#activity-table" />
+          </jsp:include>
+        </div>
         <div class="attempts-table-wrapper">
-          <table class="attempts-table">
+          <table class="attempts-table" id="activity-table">
             <thead>
               <tr>
                 <th>Time</th>
@@ -223,23 +252,26 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr data-date="04 Sep 2026 01:02 PM">
                 <td>04 Sep 2026 01:02 PM</td>
                 <td>Ravi kumar</td>
                 <td>Paired</td>
                 <td>QDSD Pair to this subscriber</td>
               </tr>
-              <tr>
+              <tr data-date="04 Sep 2026 01:02 PM">
                 <td>04 Sep 2026 01:02 PM</td>
                 <td>Ravi kumar</td>
                 <td>DSC Downloded</td>
                 <td>Certificate installed from ABC certifying Authority</td>
               </tr>
-              <tr>
+              <tr data-date="04 Sep 2026 01:02 PM">
                 <td>04 Sep 2026 01:02 PM</td>
                 <td>Ravi kumar</td>
                 <td>Signed</td>
                 <td>Aggreement.pdf signed</td>
+              </tr>
+              <tr class="date-empty" hidden>
+                <td colspan="4">No records match this date range.</td>
               </tr>
             </tbody>
           </table>

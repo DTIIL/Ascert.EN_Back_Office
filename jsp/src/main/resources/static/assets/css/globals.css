@@ -275,9 +275,40 @@ select {
 }
 
 .custom-input:focus,
-.select:focus {
+.select:focus,
+.date-input:focus {
   border-color: var(--input-focus-color);
   box-shadow: 0 0 0 3px rgba(0, 93, 248, 0.16);
+}
+
+.date-range {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.date-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--slate);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.custom-input.date-input {
+  width: 168px;
+}
+
+.table-date-toolbar {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e9eff6;
+}
+
+.btn[hidden],
+tr[hidden] {
+  display: none;
 }
 
 .ag-grid {

@@ -18,7 +18,6 @@
       }
     });
   });
-
   var loginForm = document.getElementById("loginForm");
   if (loginForm) {
     bindValidatedForm(loginForm, [
@@ -160,6 +159,8 @@
     var sortDir = 1;
     var query = "";
     var status = "";
+    var startDate = "";
+    var endDate = "";
 
     function cellText(tr) {
       return Array.prototype.map
@@ -172,9 +173,11 @@
 
     function matches(tr) {
       if (query && cellText(tr).indexOf(query) === -1) return false;
-      if (!status) return true;
-      var bag = (tr.getAttribute("data-filter") || "").split("|");
-      return bag.indexOf(status) !== -1;
+      if (status) {
+        var bag = (tr.getAttribute("data-filter") || "").split("|");
+        if (bag.indexOf(status) === -1) return false;
+      }
+      return inDateRange(tr.getAttribute("data-date") || "", startDate, endDate);
     }
 
     function render() {
@@ -223,9 +226,11 @@
       if (next) next.disabled = page >= pages - 1;
     }
 
-    root.applyFilter = function (nextQuery, nextStatus) {
+    root.applyFilter = function (nextQuery, nextStatus, nextStart, nextEnd) {
       query = (nextQuery || "").trim().toLowerCase();
       status = nextStatus || "";
+      startDate = nextStart || "";
+      endDate = nextEnd || "";
       page = 0;
       render();
     };
@@ -328,15 +333,155 @@
     });
   }
 
-  document.querySelectorAll("[data-grid-search], [data-grid-status]").forEach(function (control) {
-    var selector = control.getAttribute("data-grid-search") || control.getAttribute("data-grid-status");
+  var MONTHS = {
+    jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+    jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
+  };
+
+  function parseDisplayDate(value) {
+    if (!value) return null;
+    var match = String(value)
+      .trim()
+      .match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})(?:\s+(\d{1,2}):(\d{2})\s*(AM|PM))?/i);
+    if (!match) {
+      var parsed = new Date(value);
+      return isNaN(parsed.getTime()) ? null : parsed;
+    }
+    var month = MONTHS[match[2].toLowerCase()];
+    if (month == null) return null;
+    var hours = match[4] ? Number(match[4]) : 0;
+    var minutes = match[5] ? Number(match[5]) : 0;
+    var meridiem = match[6] ? match[6].toUpperCase() : "";
+    if (meridiem === "PM" && hours < 12) hours += 12;
+    if (meridiem === "AM" && hours === 12) hours = 0;
+    return new Date(Number(match[3]), month, Number(match[1]), hours, minutes, 0, 0);
+  }
+
+  function dateBound(isoDate, endOfDay) {
+    if (!isoDate) return null;
+    var parts = isoDate.split("-");
+    if (parts.length < 3) return null;
+    var year = Number(parts[0]);
+    var month = Number(parts[1]);
+    var day = Number(parts[2]);
+    if (!year || !month || !day) return null;
+    return endOfDay
+      ? new Date(year, month - 1, day, 23, 59, 59, 999)
+      : new Date(year, month - 1, day, 0, 0, 0, 0);
+  }
+
+  function inDateRange(value, start, end) {
+    var from = dateBound(start, false);
+    var to = dateBound(end, true);
+    if (!from && !to) return true;
+    var updated = parseDisplayDate(value);
+    if (!updated) return false;
+    if (from && updated < from) return false;
+    if (to && updated > to) return false;
+    return true;
+  }
+
+  function gridControl(selector, name) {
+    return document.querySelector("[data-grid-" + name + '="' + selector + '"]');
+  }
+
+  function syncDateBounds(selector) {
+    var from = gridControl(selector, "from");
+    var to = gridControl(selector, "to");
+    if (from) from.max = to && to.value ? to.value : "";
+    if (to) to.min = from && from.value ? from.value : "";
+  }
+
+  function toggleDateClear(selector) {
+    var clear = gridControl(selector, "clear");
+    var from = gridControl(selector, "from");
+    var to = gridControl(selector, "to");
+    if (!clear) return;
+    if ((from && from.value) || (to && to.value)) clear.removeAttribute("hidden");
+    else clear.setAttribute("hidden", "");
+  }
+
+  function refreshGrid(selector) {
+    var root = document.querySelector(selector);
+    syncDateBounds(selector);
+    toggleDateClear(selector);
+    if (!root || !root.applyFilter) return;
+    var search = gridControl(selector, "search");
+    var status = gridControl(selector, "status");
+    var from = gridControl(selector, "from");
+    var to = gridControl(selector, "to");
+    root.applyFilter(
+      search ? search.value : "",
+      status ? status.value : "",
+      from ? from.value : "",
+      to ? to.value : "",
+    );
+  }
+
+  document.querySelectorAll("[data-grid-search], [data-grid-status], [data-grid-from], [data-grid-to]").forEach(function (control) {
+    var selector =
+      control.getAttribute("data-grid-search") ||
+      control.getAttribute("data-grid-status") ||
+      control.getAttribute("data-grid-from") ||
+      control.getAttribute("data-grid-to");
     var eventName = control.getAttribute("data-grid-search") != null ? "input" : "change";
     control.addEventListener(eventName, function () {
-      var root = document.querySelector(selector);
-      if (!root || !root.applyFilter) return;
-      var search = document.querySelector('[data-grid-search="' + selector + '"]');
-      var status = document.querySelector('[data-grid-status="' + selector + '"]');
-      root.applyFilter(search ? search.value : "", status ? status.value : "");
+      refreshGrid(selector);
     });
+  });
+
+  document.querySelectorAll("[data-grid-clear]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var selector = button.getAttribute("data-grid-clear");
+      var from = gridControl(selector, "from");
+      var to = gridControl(selector, "to");
+      if (from) from.value = "";
+      if (to) to.value = "";
+      refreshGrid(selector);
+    });
+  });
+
+  document.querySelectorAll("[data-date-filter]").forEach(function (toolbar) {
+    var selector = toolbar.getAttribute("data-date-filter");
+    var table = document.querySelector(selector);
+    if (!table || !table.tBodies[0]) return;
+
+    function applyPlain() {
+      var from = gridControl(selector, "from");
+      var to = gridControl(selector, "to");
+      var start = from ? from.value : "";
+      var end = to ? to.value : "";
+      syncDateBounds(selector);
+      toggleDateClear(selector);
+      var visible = 0;
+      Array.prototype.forEach.call(table.tBodies[0].querySelectorAll("tr[data-date]"), function (row) {
+        var show = inDateRange(row.getAttribute("data-date") || "", start, end);
+        if (show) {
+          row.removeAttribute("hidden");
+          visible += 1;
+        } else {
+          row.setAttribute("hidden", "");
+        }
+      });
+      var empty = table.querySelector(".date-empty");
+      if (empty) {
+        if (visible === 0) empty.removeAttribute("hidden");
+        else empty.setAttribute("hidden", "");
+      }
+    }
+
+    toolbar.querySelectorAll("[data-grid-from], [data-grid-to]").forEach(function (input) {
+      input.addEventListener("change", applyPlain);
+    });
+    var clear = toolbar.querySelector("[data-grid-clear]");
+    if (clear) {
+      clear.addEventListener("click", function () {
+        var from = toolbar.querySelector("[data-grid-from]");
+        var to = toolbar.querySelector("[data-grid-to]");
+        if (from) from.value = "";
+        if (to) to.value = "";
+        applyPlain();
+      });
+    }
   });
 })();

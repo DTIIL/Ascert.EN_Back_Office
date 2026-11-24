@@ -64,8 +64,13 @@
 
   <section class="detail-section table-section">
     <div class="detail-section-header">Provisioning Stages</div>
+    <div class="toolbar table-date-toolbar" data-date-filter="#stage-table">
+      <jsp:include page="/WEB-INF/jsp/includes/date-range.jsp">
+        <jsp:param name="grid" value="#stage-table" />
+      </jsp:include>
+    </div>
     <div class="provisioning-grid">
-      <table>
+      <table id="stage-table">
         <thead>
           <tr>
             <th>Stage</th>
@@ -75,23 +80,26 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr data-date="12 Sep 2026 09:10 AM">
             <td>1. Build and identify</td>
             <td><span class="grid-status completed">Completed</span></td>
             <td>12 Sep 2026 09:10 AM</td>
             <td>Firmware loaded, debug ports locked. Key pair generated.</td>
           </tr>
-          <tr>
+          <tr data-date="12 Sep 2026 09:15 AM">
             <td>2. Register with the cloud</td>
             <td><span class="grid-status completed">Completed</span></td>
             <td>12 Sep 2026 09:15 AM</td>
             <td>Device registered over factory mTLS. Vendor attestation verified. Device certificate issued.</td>
           </tr>
-          <tr>
+          <tr data-date="12 Sep 2026 09:20 AM">
             <td>3. Personalise and lock</td>
             <td><span class="grid-status completed">Completed</span></td>
             <td>12 Sep 2026 09:20 AM</td>
             <td>Device certificate and DTI command key written, counters initialised and device locked.</td>
+          </tr>
+          <tr class="date-empty" hidden>
+            <td colspan="4">No records match this date range.</td>
           </tr>
         </tbody>
       </table>
@@ -100,8 +108,13 @@
 
   <section class="detail-section table-section">
     <div class="detail-section-header">Provisioning Events</div>
+    <div class="toolbar table-date-toolbar" data-date-filter="#event-table">
+      <jsp:include page="/WEB-INF/jsp/includes/date-range.jsp">
+        <jsp:param name="grid" value="#event-table" />
+      </jsp:include>
+    </div>
     <div class="provisioning-grid">
-      <table>
+      <table id="event-table">
         <thead>
           <tr>
             <th>Timestamp</th>
@@ -112,40 +125,43 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr data-date="12 Sep 2026 09:10 AM">
             <td>12 Sep 2026 09:10 AM</td>
             <td>1. Build and identify</td>
             <td>Load signed firmware</td>
             <td><span class="grid-status success">Success</span></td>
             <td>Firmware version 1.0.3 loaded.</td>
           </tr>
-          <tr>
+          <tr data-date="12 Sep 2026 09:10 AM">
             <td>12 Sep 2026 09:10 AM</td>
             <td>1. Build and identify</td>
             <td>Lock debug ports</td>
             <td><span class="grid-status success">Success</span></td>
             <td>Debug ports locked.</td>
           </tr>
-          <tr>
+          <tr data-date="12 Sep 2026 09:12 AM">
             <td>12 Sep 2026 09:12 AM</td>
             <td>1. Build and identify</td>
             <td>Generate device key pair</td>
             <td><span class="grid-status success">Success</span></td>
             <td>Key pair generated in SE.</td>
           </tr>
-          <tr>
+          <tr data-date="12 Sep 2026 09:15 AM">
             <td>12 Sep 2026 09:15 AM</td>
             <td>2. Register with the cloud</td>
             <td>Register device</td>
             <td><span class="grid-status success">Success</span></td>
             <td>Registered over factory mTLS.</td>
           </tr>
-          <tr>
+          <tr data-date="12 Sep 2026 09:16 AM">
             <td>12 Sep 2026 09:16 AM</td>
             <td>2. Register with the cloud</td>
             <td>Verify vendor attestation</td>
             <td><span class="grid-status success">Success</span></td>
             <td>Attestation verified.</td>
+          </tr>
+          <tr class="date-empty" hidden>
+            <td colspan="5">No records match this date range.</td>
           </tr>
         </tbody>
       </table>
