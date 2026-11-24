@@ -26,6 +26,8 @@
 ========================================= */
 
 .users-primary-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
     padding: 11px 18px;
     border: 0;
     border-radius: 9px;
@@ -227,9 +229,12 @@
     overflow: hidden;
 }
 
+/* Grows with the rows shown and only scrolls once it would push the
+   pagination below the fold, instead of a fixed 360px box. */
 .users-table-scroll {
     width: 100%;
-    height: 360px;
+    max-height: max(360px, calc(100vh - 340px));
+    max-height: max(360px, calc(100dvh - 340px));
     overflow: auto;
 }
 
@@ -322,6 +327,16 @@
     background: #e5f5ed;
 }
 
+.user-status.inactive {
+    color: #64748b;
+    background: #eef0f3;
+}
+
+.user-status.pending {
+    color: #956000;
+    background: #fff5df;
+}
+
 .user-status.unknown {
     color: #475569;
     background: #edf0f4;
@@ -347,6 +362,7 @@
     align-items: center;
     gap: 22px;
     background: #fff;
+    border-top: 1px solid #e5eaf1;
     font-size: 12px;
     color: var(--navy);
 }
@@ -379,18 +395,36 @@
 }
 
 .pagination-right button {
-    width: 26px;
+    width: 28px;
     height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     border: 0;
+    border-radius: 5px;
     background: transparent;
     color: var(--navy);
-    font-size: 19px;
+    font-family: inherit;
+    font-size: 17px;
+    line-height: 1;
     cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.pagination-right button:hover:not(:disabled) {
+    background: #f1f5f9;
 }
 
 .pagination-right button:disabled {
     color: #c5ccd6;
     cursor: not-allowed;
+}
+
+.pagination-left select:focus,
+.pagination-right input:focus {
+    outline: none;
+    border-color: var(--blue);
 }
 
 /* =========================================
@@ -403,6 +437,10 @@
         flex-wrap: wrap;
         justify-content: space-between;
         gap: 12px;
+    }
+
+    .add-user-form-container {
+        padding: 20px;
     }
 
 }
@@ -439,6 +477,16 @@
 
     .add-user-form-actions {
         flex-wrap: wrap;
+    }
+
+    .add-user-form-actions button {
+        flex: 1 1 140px;
+    }
+
+    .pagination-left,
+    .pagination-right {
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
 }

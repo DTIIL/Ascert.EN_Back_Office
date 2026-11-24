@@ -246,6 +246,14 @@
                                                    <span class="grid-status status-not-paired">Not Paired</span>
                                                </c:when>
 
+                                               <c:when test="${device.status eq 'Suspended'}">
+                                                   <span class="grid-status status-suspended">Suspended</span>
+                                               </c:when>
+
+                                               <c:when test="${device.status eq 'Lost'}">
+                                                   <span class="grid-status status-lost">Lost</span>
+                                               </c:when>
+
                                                <c:otherwise>
                                                    <span class="grid-status">
                                                        <c:out value="${device.status}"/>
@@ -303,9 +311,9 @@
                             <label for="pageSize">Page Size:</label>
 
                             <select id="pageSize">
-                                <option value="12" selected>12</option>
-                                <option value="24">24</option>
-                                <option value="36">36</option>
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
                             </select>
 
                         </div>
@@ -433,7 +441,7 @@ function parseEpochDate(rawDate) {
     const emptyMessage = document.getElementById("emptyMessage");
 
     let currentPage = 1;
-    let pageSize = 12;
+    let pageSize = 10;
 
     let filteredRows = [...rows];
 
@@ -629,7 +637,15 @@ document.querySelectorAll(".device-last-updated").forEach(function(element) {
         return;
     }
 
-    element.textContent = new Intl.DateTimeFormat("en-IN", {
+    element.textContent = formatIndiaDateTime(date);
+
+});
+
+// Same display format as server-formatted dates: "24 Nov 2026, 03:03 PM" (India time).
+function formatIndiaDateTime(date) {
+    const parts = {};
+
+    new Intl.DateTimeFormat("en-US", {
         day: "2-digit",
         month: "short",
         year: "numeric",
@@ -637,9 +653,13 @@ document.querySelectorAll(".device-last-updated").forEach(function(element) {
         minute: "2-digit",
         hour12: true,
         timeZone: "Asia/Kolkata"
-    }).format(date);
+    }).formatToParts(date).forEach(function(part) {
+        parts[part.type] = part.value;
+    });
 
-});
+    return parts.day + " " + parts.month + " " + parts.year + ", "
+        + parts.hour + ":" + parts.minute + " " + (parts.dayPeriod || "").toUpperCase();
+}
 
 </script>
 

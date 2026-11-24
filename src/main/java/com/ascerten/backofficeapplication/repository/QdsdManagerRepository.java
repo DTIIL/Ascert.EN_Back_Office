@@ -46,8 +46,15 @@ public class QdsdManagerRepository {
                     ELSE q.lifecycle
                 END AS qdsd_status,
 
-                last_login.last_activity_at AT TIME ZONE 'Asia/Kolkata'
-                    AS last_activity_at
+                TO_CHAR(
+                    last_login.last_activity_at AT TIME ZONE 'Asia/Kolkata',
+                    'DD Mon YYYY, HH12:MI AM'
+                ) AS last_activity_at,
+
+                CAST(
+                    last_login.last_activity_at AT TIME ZONE 'Asia/Kolkata'
+                    AS date
+                ) AS last_activity_date
 
             FROM qdsd_details q
 

@@ -7,6 +7,7 @@ import com.ascerten.backofficeapplication.repository.UserRepository;
 import com.ascerten.backofficeapplication.repository.MasterUserRoleRepository;
 import com.ascerten.backofficeapplication.enums.SubscriberStatus;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +15,11 @@ import java.time.OffsetDateTime;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class UserManagementService {
@@ -62,6 +67,18 @@ public class UserManagementService {
         return roleRepository.findByActiveOrderById((short) 1);
     }
 
+    // All roles, active or not, keyed by ID for displaying existing assignments.
+    public Map<Integer, MasterUserRole> getRolesById() {
+
+        Map<Integer, MasterUserRole> rolesById = new LinkedHashMap<>();
+
+        for (MasterUserRole role : roleRepository.findAll(Sort.by("id"))) {
+            rolesById.put(role.getId(), role);
+        }
+
+        return rolesById;
+    }
+
     // Generate a random 8-character password.
     private String generatePassword() {
 
@@ -102,7 +119,8 @@ public class UserManagementService {
             String email,
             String mobileNumber,
             Integer roleId,
-            Short status) {
+            Short status,
+            Integer currentRoleId) {
 
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException(
@@ -151,10 +169,16 @@ public class UserManagementService {
             );
         }
 
+        // A user may keep their current role after it is deactivated,
+        // but an inactive role can never be newly assigned.
+        boolean keepsCurrentRole = currentRoleId != null
+                && Objects.equals(roleId, currentRoleId);
+
         if (roleId == null ||
                 roleRepository.findById(roleId)
-                        .filter(role -> role.getActive() != null
-                                && role.getActive() == 1)
+                        .filter(role -> keepsCurrentRole
+                                || (role.getActive() != null
+                                && role.getActive() == 1))
                         .isEmpty()) {
 
             throw new IllegalArgumentException(
@@ -200,7 +224,8 @@ public class UserManagementService {
                 email,
                 mobileNumber,
                 roleId,
-                status
+                status,
+                null
         );
 
         String normalizedEmail = email.trim();
@@ -215,6 +240,9 @@ public class UserManagementService {
                     "An active user with this email address already exists."
             );
         }
+
+        // Serialize requests for the same username until this transaction ends.
+        lockUsername(normalizedUsername);
 
         if (userRepository.existsByUsernameIgnoreCase(normalizedUsername)) {
             throw new IllegalArgumentException(
@@ -271,7 +299,8 @@ public class UserManagementService {
                 email,
                 mobileNumber,
                 roleId,
-                status
+                status,
+                user.getUserRole()
         );
 
         String normalizedEmail = email.trim();
@@ -288,6 +317,9 @@ public class UserManagementService {
                     "An active user with this email address already exists."
             );
         }
+
+        // Serialize requests for the same username until this transaction ends.
+        lockUsername(normalizedUsername);
 
         if (userRepository.existsByUsernameIgnoreCaseAndIdNot(
                 normalizedUsername,
@@ -314,5 +346,12 @@ public class UserManagementService {
         user.setUpdatedIp(updatedIp);
 
         userRepository.save(user);
+    }
+
+    // Take a transaction-scoped lock on the lower-cased username. It is released
+    // automatically on commit or rollback, so a second request for the same
+    // username waits and then sees the first user in its duplicate check.
+    private void lockUsername(String username) {
+        userRepository.lockByKey("users_details.username:" + username.toLowerCase(Locale.ROOT));
     }
 }

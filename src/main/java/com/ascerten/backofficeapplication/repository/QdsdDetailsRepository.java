@@ -124,6 +124,9 @@ public interface QdsdDetailsRepository
 
 
     // Failure Report
+    // Signing failures come only from qdsd_signing_details (status 24 with a reason,
+    // the same rule as the dashboard Failures chart); the action-log
+    // "Signing Failed" event is not listed so a failure is not shown twice.
     @Query(value = """
         SELECT
             al.id AS "recordId",
@@ -144,7 +147,7 @@ public interface QdsdDetailsRepository
             NULL::varchar AS "documentName",
             NULL::varchar AS "signingPlatform",
             NULL::varchar AS "signedDate",
-            COALESCE(dsc.failure_reason, sig.failure_reason) AS "failureReason",
+            dsc.failure_reason AS "failureReason",
             al.created_date AS sort_date
         FROM public.qdsd_action_log al
         JOIN public.master_qdsd_action mqa
@@ -168,21 +171,11 @@ public interface QdsdDetailsRepository
             ORDER BY c.created_date DESC, c.id DESC
             LIMIT 1
         ) dsc ON mqa.action_name = 'DSC Download Failed'
-        LEFT JOIN LATERAL (
-            SELECT sd.failure_reason
-            FROM public.qdsd_signing_details sd
-            WHERE sd.qdsd_id = al.qdsd_id
-              AND sd.status = 24
-              AND sd.created_date <= al.created_date
-            ORDER BY sd.created_date DESC, sd.id DESC
-            LIMIT 1
-        ) sig ON mqa.action_name = 'Signing Failed'
         WHERE mqa.action_name IN (
             'Pairing Failed',
             'Pairing Request Expired',
             'Pairing Declined',
-            'DSC Download Failed',
-            'Signing Failed'
+            'DSC Download Failed'
         )
 
         UNION ALL
@@ -213,7 +206,8 @@ public interface QdsdDetailsRepository
             ON qs.qdsd_id = qd.id
         LEFT JOIN public.mobile_device_details md
             ON qd.mobile_device_id = md.id
-        WHERE qs.failure_reason IS NOT NULL
+        WHERE qs.status = 24
+          AND qs.failure_reason IS NOT NULL
         ORDER BY sort_date DESC
         """, nativeQuery = true)
     List<ReportRowProjection> findFailureReport();

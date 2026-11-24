@@ -1,11 +1,15 @@
 
 package com.ascerten.backofficeapplication.controller;
 
+import com.ascerten.backofficeapplication.enums.SigningStatus;
 import com.ascerten.backofficeapplication.service.ReportService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Controller
 public class ReportController {
@@ -139,6 +143,14 @@ public class ReportController {
                 "signing",
                 reportService.getSigningReport()
         );
+
+        // Status code to display label (for example 25 -> Expired),
+        // used for both the table cells and the status filter.
+        Map<String, String> signingStatusLabels = new LinkedHashMap<>();
+        for (SigningStatus status : SigningStatus.values()) {
+            signingStatusLabels.put(String.valueOf(status.getCode()), status.getDescription());
+        }
+        model.addAttribute("signingStatusLabels", signingStatusLabels);
 
         return "report-detail";
     }

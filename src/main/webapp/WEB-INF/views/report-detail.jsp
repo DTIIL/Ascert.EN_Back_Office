@@ -1,4 +1,3 @@
-```
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
@@ -247,8 +246,11 @@
                                     aria-label="Filter by signing status">
 
                                 <option value="">All Statuses</option>
-                                <option value="23">Success</option>
-                                <option value="24">Failed</option>
+                                <c:forEach var="statusEntry" items="${signingStatusLabels}">
+                                    <option value="${fn:toLowerCase(statusEntry.value)}">
+                                        <c:out value="${statusEntry.value}"/>
+                                    </option>
+                                </c:forEach>
 
                             </select>
 
@@ -535,19 +537,30 @@
                                             <td><c:out value="${item.signingPlatform}" default="—"/></td>
 
                                             <td>
+                                                <c:set var="signingLabel"
+                                                       value="${empty item.status ? '' : signingStatusLabels[item.status]}"/>
+
                                                 <c:choose>
 
+                                                    <%-- Success --%>
                                                     <c:when test="${item.status eq '23'}">
-                                                        <span class="report-status">Success</span>
+                                                        <span class="report-status"><c:out value="${signingLabel}"/></span>
                                                     </c:when>
 
-                                                    <c:when test="${item.status eq '24'}">
-                                                        <span class="report-status danger">Failed</span>
+                                                    <%-- Failed, Declined --%>
+                                                    <c:when test="${item.status eq '24' or item.status eq '21'}">
+                                                        <span class="report-status danger"><c:out value="${signingLabel}"/></span>
                                                     </c:when>
 
+                                                    <%-- Expired, Completion Unconfirmed --%>
+                                                    <c:when test="${item.status eq '25' or item.status eq '26'}">
+                                                        <span class="report-status warning"><c:out value="${signingLabel}"/></span>
+                                                    </c:when>
+
+                                                    <%-- Requested, Approved, Started, or an unknown code --%>
                                                     <c:otherwise>
                                                         <span class="report-status neutral">
-                                                            <c:out value="${item.status}" default="—"/>
+                                                            <c:out value="${empty signingLabel ? item.status : signingLabel}" default="—"/>
                                                         </span>
                                                     </c:otherwise>
 
@@ -589,9 +602,9 @@
                         <label for="pageSize">Page Size:</label>
 
                         <select id="pageSize">
-                            <option value="12" selected>12</option>
-                            <option value="24">24</option>
-                            <option value="48">48</option>
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
                         </select>
                     </div>
 
@@ -690,7 +703,7 @@
 
     let filteredRows = [...allRows];
     let currentPage = 1;
-    let pageSize = 12;
+    let pageSize = 10;
 
     let sortColumn = -1;
     let sortDirection = "asc";
@@ -821,12 +834,7 @@
                     const statusText =
                         row.cells[statusCellIndex].innerText.trim().toLowerCase();
 
-                    if (reportType === "signing") {
-                        matchesStatus = statusText ===
-                            (selectedStatus === "23" ? "success" : "failed");
-                    } else {
-                        matchesStatus = statusText === selectedStatus;
-                    }
+                    matchesStatus = statusText === selectedStatus;
                 }
             }
 
@@ -1057,4 +1065,3 @@
 
 </body>
 </html>
-```

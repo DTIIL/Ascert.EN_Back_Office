@@ -27,15 +27,16 @@
 
 .factory-list-header h1,
 .factory-page-title h1 {
-    font-size: 24px;
-    font-weight: 600;
-    color: #17304f;
-    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 650;
+    color: var(--navy);
+    margin: 0 0 6px;
 }
 
 .factory-list-header p {
     margin: 0;
-    font-size: 13px;
+    font-size: 14px;
+    line-height: 1.5;
     color: #64748b;
 }
 
@@ -91,6 +92,27 @@
 
 .factory-status-filter:focus {
     border-color: #3867d6;
+}
+
+/* The page's inline styles reset these controls with "font: inherit"
+   (16px); keep them at the same size as the search box. */
+.factory-toolbar .factory-status-filter {
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.factory-toolbar .factory-date-filter input[type="date"] {
+    font-size: 12px;
+}
+
+.factory-toolbar .factory-date-filter label {
+    font-weight: 500;
+}
+
+.factory-toolbar .factory-date-clear {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
 }
 
 /* =========================================
@@ -176,8 +198,11 @@
 
 /* Table */
 
+/* min-width keeps the fixed-layout columns readable on narrow screens;
+   the wrapper scrolls horizontally instead of truncating every cell. */
 .factory-table {
     width: 100%;
+    min-width: 900px;
     table-layout: fixed;
     border-collapse: collapse;
 }
@@ -235,6 +260,10 @@
     font-weight: 600;
 }
 
+.factory-table td.factory-unavailable {
+    color: #94a3b8;
+}
+
 /* =========================================
    VIEW BUTTON
 ========================================= */
@@ -289,6 +318,20 @@
     color: #64748b;
 }
 
+/* Suspended Status */
+
+.status-suspended {
+    background: #fdecec;
+    color: #b42318;
+}
+
+/* Lost Status */
+
+.status-lost {
+    background: #e2e8f0;
+    color: #334155;
+}
+
 /* =========================================
    EMPTY MESSAGE
 ========================================= */
@@ -329,12 +372,20 @@
 }
 
 .page-size-control select {
-    padding: 6px 8px;
-    border: 1px solid #dfe8f2;
+    height: 30px;
+    padding: 0 6px;
+    border: 1px solid #d7deea;
     border-radius: 5px;
     background: #ffffff;
     color: #17304f;
+    font-family: inherit;
     font-size: 12px;
+    cursor: pointer;
+}
+
+.page-size-control select:focus {
+    outline: none;
+    border-color: #3867d6;
 }
 
 .pagination-buttons {
@@ -344,15 +395,20 @@
 }
 
 .pagination-buttons button {
-    min-width: 27px;
+    min-width: 28px;
     height: 28px;
-    padding: 4px 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
     border: none;
     background: transparent;
     color: #315a8a;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1;
 }
 
 .pagination-buttons button:hover:not(:disabled) {
@@ -582,6 +638,17 @@
         justify-content: center;
     }
 
+    .factory-list-header h1,
+    .factory-page-title h1 {
+        font-size: 22px;
+    }
+
+    .factory-search,
+    .factory-status-filter {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
 }
 
 @media (max-width: 500px) {
@@ -594,7 +661,8 @@
 
     .factory-pagination {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
+        gap: 10px;
     }
 
     .factory-search {

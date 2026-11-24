@@ -78,6 +78,12 @@
     font-weight: 500;
 }
 
+.qdsd-date-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .qdsd-date-filter input[type="date"] {
     height: 42px;
     width: 150px;
@@ -96,8 +102,9 @@
     border-color: var(--blue);
 }
 
-/* Clear Dates button */
-.qdsd-clear-date-button {
+/* Clear Dates button (the page markup uses .qdsd-date-clear) */
+.qdsd-clear-date-button,
+.qdsd-date-clear {
     height: 42px;
     padding: 0 12px;
     border: 1px solid var(--line);
@@ -110,8 +117,40 @@
     white-space: nowrap;
 }
 
-.qdsd-clear-date-button:hover {
+.qdsd-clear-date-button:hover,
+.qdsd-date-clear:hover {
     background: var(--sand);
+}
+
+/* "Filter by status" dropdown trigger: match the 42px toolbar controls.
+   Scoped under .qdsd-filter so it wins over the page's inline defaults. */
+.qdsd-filter .multi-filter-button {
+    height: 42px;
+    gap: 10px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--slate);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.qdsd-filter .multi-filter-button:hover {
+    background: var(--sand);
+}
+
+.qdsd-filter .multi-filter-menu {
+    border-color: var(--line);
+    border-radius: 8px;
+    color: var(--slate);
+    font-size: 13px;
+}
+
+.qdsd-filter .filter-group strong {
+    color: var(--navy);
+    font-size: 12px;
 }
 
 .qdsd-filter-button,
@@ -285,6 +324,25 @@
     border-top: 1px solid #edf0f4;
 }
 
+.qdsd-page-size {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.qdsd-page-size select {
+    height: 30px;
+    padding: 0 6px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: #fff;
+    color: var(--slate);
+    font-family: inherit;
+    font-size: 12px;
+}
+
 .qdsd-pagination-info {
     color: var(--muted);
     font-size: 12px;
@@ -292,16 +350,31 @@
 
 .qdsd-pagination-actions {
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
+.qdsd-current-page {
+    padding: 0 4px;
+    color: var(--slate);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
 .pagination-link {
-    padding: 8px 12px;
+    min-width: 34px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
     border: 1px solid var(--line);
     border-radius: 7px;
     color: var(--slate);
     font-size: 12px;
     text-decoration: none;
+    box-sizing: border-box;
 }
 
 .pagination-link:hover {
@@ -336,8 +409,21 @@
 
     .qdsd-search,
     .qdsd-filter,
-    .qdsd-filter select {
+    .qdsd-filter select,
+    .qdsd-filter .multi-filter-dropdown {
         width: 100%;
+    }
+
+    .qdsd-search {
+        min-width: 0;
+    }
+
+    .qdsd-date-field {
+        flex: 1 1 140px;
+    }
+
+    .qdsd-date-field > span {
+        min-width: 68px;
     }
 
     .qdsd-filter-button,
@@ -360,7 +446,30 @@
         min-width: 140px;
     }
 
-    .qdsd-clear-date-button {
+    .qdsd-clear-date-button,
+    .qdsd-date-clear {
         flex: 1;
+    }
+}
+
+/* Up to 1440px-class laptops the toolbar cannot fit on one line, so give the
+   search its own row and keep the filters and buttons together below it. */
+@media (max-width: 1500px) {
+    .qdsd-search {
+        flex: 1 1 100%;
+    }
+}
+
+/* 1366/1280 laptops: slightly tighter cells so more columns fit before
+   the table starts scrolling sideways */
+@media (max-width: 1440px) {
+    .qdsd-table {
+        min-width: 980px;
+    }
+
+    .qdsd-table th,
+    .qdsd-table td {
+        padding-left: 10px;
+        padding-right: 10px;
     }
 }

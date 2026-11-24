@@ -145,7 +145,7 @@
                                        id="fullName"
                                        name="name"
                                        placeholder="Enter full name"
-                                       maxlength="150"
+                                       maxlength="100"
                                        value="<c:out value='${editingUser.name}'/>"
                                        required>
                             </div>
@@ -171,7 +171,7 @@
                                        id="emailId"
                                        name="emailId"
                                        placeholder="Enter email address"
-                                       maxlength="255"
+                                       maxlength="150"
                                        value="<c:out value='${editingUser.emailId}'/>"
                                        required>
                             </div>
@@ -201,10 +201,13 @@
 
                                     <c:forEach var="role" items="${roles}">
                                         <option value="${role.id}"
+                                            <c:if test="${role.active != 1}">
+                                                data-inactive-role="true"
+                                            </c:if>
                                             <c:if test="${editMode && editingUser.userRole == role.id}">
                                                 selected
                                             </c:if>>
-                                            <c:out value="${role.userRole}"/>
+                                            <c:out value="${role.userRole}"/><c:if test="${role.active != 1}"> (inactive)</c:if>
                                         </option>
                                     </c:forEach>
 
@@ -337,11 +340,8 @@
                                         </td>
 
                                         <td>
-                                            <c:forEach var="role" items="${roles}">
-                                                <c:if test="${user.userRole == role.id}">
-                                                    <c:out value="${role.userRole}"/>
-                                                </c:if>
-                                            </c:forEach>
+                                            <c:set var="assignedRole" value="${rolesById[user.userRole]}"/>
+                                            <c:out value="${assignedRole.userRole}" default="—"/><c:if test="${not empty assignedRole && assignedRole.active != 1}"> (inactive)</c:if>
                                         </td>
 
                                         <td>
@@ -396,9 +396,9 @@
                             <label for="pageSize">Page Size:</label>
 
                             <select id="pageSize">
-                                <option value="12" selected>12</option>
-                                <option value="24">24</option>
-                                <option value="36">36</option>
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
                             </select>
 
                             <span id="recordInfo">0 to 0 of 0</span>
@@ -492,6 +492,11 @@
         if (existingId) {
             existingId.remove();
         }
+
+        // Inactive roles are only shown for a user who already has one.
+        userForm.querySelectorAll('option[data-inactive-role]').forEach(option => {
+            option.remove();
+        });
 
         // Change the form heading and description.
         formHeading.textContent = "Add User";

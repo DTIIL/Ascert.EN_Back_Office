@@ -17,7 +17,30 @@ public class DashboardService {
         this.dashboardRepository = dashboardRepository;
     }
 
-    public DashboardResponse getDashboardData() {
+    // Chart ranges the dashboard offers, in days.
+    public static final List<Integer> RANGE_OPTIONS = List.of(7, 14, 30);
+
+    public static final int DEFAULT_RANGE = 7;
+
+    // Fall back to the default for any value that is not an offered range.
+    public static int resolveRange(String range) {
+
+        if (range != null) {
+            try {
+                int days = Integer.parseInt(range.trim());
+
+                if (RANGE_OPTIONS.contains(days)) {
+                    return days;
+                }
+            } catch (NumberFormatException ignored) {
+                // Use the default range.
+            }
+        }
+
+        return DEFAULT_RANGE;
+    }
+
+    public DashboardResponse getDashboardData(int days) {
 
         // Fetch subscriber statistics
         Object[] users = dashboardRepository.getSubscriberCounts();
@@ -27,13 +50,13 @@ public class DashboardService {
 
         // Fetch weekly chart data
         List<Object[]> activityRows =
-                dashboardRepository.getWeeklyActionCounts("QDSD Paired");
+                dashboardRepository.getWeeklyActionCounts("QDSD Paired", days);
 
         List<Object[]> signatureRows =
-                dashboardRepository.getWeeklySignatureCounts();
+                dashboardRepository.getWeeklySignatureCounts(days);
 
         List<Object[]> failureRows =
-                dashboardRepository.getWeeklyFailureCounts();
+                dashboardRepository.getWeeklyFailureCounts(days);
 
         // Prepare chart data
         List<String> labels = new ArrayList<>();

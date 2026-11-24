@@ -137,10 +137,36 @@
     outline-offset: 3px;
 }
 
-/* Save Button */
+/* Save Button (no shared .btn styles exist, so style it here to match
+   the primary buttons on the Users page) */
 
 .settings-card .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.settings-card .btn-primary {
+    background: var(--blue);
+    color: #fff;
+}
+
+.settings-card .btn-primary:hover {
+    background: #004dcc;
+}
+
+.settings-card .btn:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
 }
 
 /* Messages */
@@ -176,5 +202,9 @@
 
     .preference-info span {
         font-size: 12px;
+    }
+
+    .settings-card .btn {
+        width: 100%;
     }
 }

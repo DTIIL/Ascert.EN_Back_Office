@@ -115,46 +115,46 @@
                     <article class="stat">
                         <div class="label">
                             <span class="dot blue"></span>
-                            Total users
+                            Total subscribers
                         </div>
 
                         <b><c:out value="${dashboardData.totalUsers}"/></b>
 
                         <p class="stat-hint">
-                            Every account on the platform
+                            Every subscriber account on the platform
                         </p>
                     </article>
 
                     <article class="stat">
                         <div class="label">
                             <span class="dot green"></span>
-                            Active users
+                            Active subscribers
                         </div>
 
                         <b><c:out value="${dashboardData.activeUsers}"/></b>
 
                         <p class="stat-hint">
-                            Accounts currently active
+                            Subscriber accounts currently active
                         </p>
                     </article>
 
                     <article class="stat">
                         <div class="label">
                             <span class="dot orange"></span>
-                            Inactive users
+                            Inactive subscribers
                         </div>
 
                         <b><c:out value="${dashboardData.inactiveUsers}"/></b>
 
                         <p class="stat-hint">
-                            Accounts currently inactive
+                            Subscriber accounts currently inactive
                         </p>
                     </article>
 
                     <article class="stat">
                         <div class="label">
                             <span class="dot red"></span>
-                            Pending users
+                            Pending subscribers
                         </div>
 
                         <b><c:out value="${dashboardData.pendingUsers}"/></b>
@@ -166,11 +166,35 @@
 
                 </div>
 
+                <!-- Chart range -->
+                <form class="chart-range"
+                      method="get"
+                      action="${pageContext.request.contextPath}/dashboard">
+
+                    <label for="chartRange">Chart range</label>
+
+                    <select id="chartRange"
+                            name="range"
+                            onchange="this.form.submit()">
+                        <c:forEach var="option" items="${rangeOptions}">
+                            <option value="${option}"
+                                    <c:if test="${option == rangeDays}">selected</c:if>>
+                                Last ${option} days
+                            </option>
+                        </c:forEach>
+                    </select>
+
+                    <noscript>
+                        <button type="submit" class="chart-range-apply">Apply</button>
+                    </noscript>
+
+                </form>
+
                 <!-- Charts -->
                 <div class="chart-grid">
 
                     <article class="chart-card">
-                        <h2>QDSD activity</h2>
+                        <h2>QDSD pairings</h2>
 
                         <div class="chart-canvas">
                             <canvas id="activityChart"></canvas>
@@ -394,7 +418,7 @@
                     data: values,
                     backgroundColor: color,
                     borderRadius: 5,
-                    barThickness: 18
+                    maxBarThickness: 18
 
                 }]
 
@@ -436,7 +460,7 @@
     // Create dashboard charts
     createBarChart(
         "activityChart",
-        "QDSD activity",
+        "QDSD pairings",
         activity,
         "#0860E8"
     );

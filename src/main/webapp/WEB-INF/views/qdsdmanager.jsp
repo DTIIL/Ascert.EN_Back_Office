@@ -159,6 +159,8 @@
                       action="${pageContext.request.contextPath}/qdsdmanager"
                       method="get">
 
+                    <input type="hidden" name="size" value="<c:out value='${pageSize}'/>">
+
                     <!-- Search -->
                     <div class="qdsd-search">
 
@@ -430,6 +432,15 @@
                     <c:if test="${totalPages > 0}">
                         <div class="qdsd-pagination">
 
+                            <div class="qdsd-page-size">
+                                <label for="qdsdPageSize">Page Size:</label>
+                                <select id="qdsdPageSize">
+                                    <c:forEach var="sizeOption" items="${pageSizeOptions}">
+                                        <option value="${sizeOption}" ${sizeOption == pageSize ? 'selected' : ''}>${sizeOption}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+
                             <span class="qdsd-pagination-info">
                                 <c:choose>
                                     <c:when test="${totalRecords > 0}">
@@ -446,6 +457,7 @@
                                 <c:url var="firstPageUrl" value="/qdsdmanager">
                                     <c:param name="page" value="1"/>
                                     <c:param name="search" value="${searchTerm}"/>
+                                    <c:param name="size" value="${pageSize}"/>
                                     <c:if test="${not empty fromDate}">
                                         <c:param name="fromDate" value="${fromDate}"/>
                                     </c:if>
@@ -476,6 +488,7 @@
                                 <c:url var="previousUrl" value="/qdsdmanager">
                                     <c:param name="page" value="${currentPage > 1 ? currentPage - 1 : 1}"/>
                                     <c:param name="search" value="${searchTerm}"/>
+                                    <c:param name="size" value="${pageSize}"/>
                                     <c:if test="${not empty fromDate}">
                                         <c:param name="fromDate" value="${fromDate}"/>
                                     </c:if>
@@ -510,6 +523,7 @@
                                 <c:url var="nextUrl" value="/qdsdmanager">
                                     <c:param name="page" value="${currentPage < totalPages ? currentPage + 1 : totalPages}"/>
                                     <c:param name="search" value="${searchTerm}"/>
+                                    <c:param name="size" value="${pageSize}"/>
                                     <c:if test="${not empty fromDate}">
                                         <c:param name="fromDate" value="${fromDate}"/>
                                     </c:if>
@@ -540,6 +554,7 @@
                                 <c:url var="lastPageUrl" value="/qdsdmanager">
                                     <c:param name="page" value="${totalPages}"/>
                                     <c:param name="search" value="${searchTerm}"/>
+                                    <c:param name="size" value="${pageSize}"/>
                                     <c:if test="${not empty fromDate}">
                                         <c:param name="fromDate" value="${fromDate}"/>
                                     </c:if>
@@ -602,6 +617,16 @@
         }
 
     });
+
+    const qdsdPageSize = document.getElementById("qdsdPageSize");
+    if (qdsdPageSize) {
+        qdsdPageSize.addEventListener("change", function() {
+            const params = new URLSearchParams(window.location.search);
+            params.set("size", this.value);
+            params.set("page", "1");
+            window.location.search = params.toString();
+        });
+    }
 
     document.getElementById("clearQdsdDates").addEventListener("click", function() {
         const form = this.closest("form");

@@ -1,9 +1,10 @@
 
 /* QDSD Details Page */
 
+/* .app-content already provides the page padding */
 .qdsd-details-section {
     width: 100%;
-    padding: 24px;
+    padding: 0;
     box-sizing: border-box;
 }
 
@@ -28,9 +29,9 @@
 
 .details-page-heading h1 {
     margin: 0 0 6px;
-    font-size: 25px;
+    font-size: 26px;
     font-weight: 650;
-    color: #202938;
+    color: var(--navy);
 }
 
 .details-page-heading p {
@@ -271,8 +272,8 @@
 
 @media (max-width: 700px) {
 
-    .qdsd-details-section {
-        padding: 16px;
+    .details-page-heading h1 {
+        font-size: 22px;
     }
 
     .details-summary-card {

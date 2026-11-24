@@ -55,9 +55,9 @@ public class QdsdManagerService {
             String downloadStatus = toStringValue(row[6]);
             String qdsdStatus = toStringValue(row[7]);
 
-            Object lastUsedValue = row[8];
-            String lastUsed = formatDate(lastUsedValue);
-            LocalDate lastUsedDate = toLocalDate(lastUsedValue);
+            // Both values are converted to India time in SQL, like the report pages.
+            String lastUsed = toStringValue(row[8]);
+            LocalDate lastUsedDate = toLocalDate(row[9]);
 
             QdsdManagerResponse response = new QdsdManagerResponse(
                     id,
@@ -250,6 +250,14 @@ public class QdsdManagerService {
 
         if (value == null) {
             return null;
+        }
+
+        if (value instanceof LocalDate date) {
+            return date;
+        }
+
+        if (value instanceof java.sql.Date date) {
+            return date.toLocalDate();
         }
 
         if (value instanceof Timestamp timestamp) {

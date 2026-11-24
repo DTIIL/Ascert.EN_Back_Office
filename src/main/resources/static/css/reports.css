@@ -16,19 +16,20 @@
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
-    margin-bottom: 28px;
+    margin-bottom: 22px;
 }
 
 .reports-page-heading h1 {
-    margin: 0 0 8px;
+    margin: 0 0 6px;
     font-size: 26px;
-    font-weight: 600;
+    font-weight: 650;
 }
 
 .reports-page-heading p {
     margin: 0;
-    color: #737987;
+    color: var(--muted);
     font-size: 14px;
+    line-height: 1.5;
 }
 
 
@@ -108,6 +109,17 @@
     flex-shrink: 0;
     font-size: 23px;
     color: #7b8493;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.report-card:hover .report-card-arrow {
+    color: #344d73;
+    transform: translateX(3px);
+}
+
+.report-card:focus-visible {
+    outline: 2px solid #1764ff;
+    outline-offset: 2px;
 }
 
 
@@ -337,6 +349,7 @@
     height: 46px;
     padding: 0 14px;
     text-align: left;
+    vertical-align: middle;
     color: #1d1d1b;
     border-bottom: 1px solid #e6ebf2;
 }
@@ -365,15 +378,19 @@
    Same layout as Provisioning
 ================================ */
 
+/* Separate bar with its own border so it lines up with the table card above
+   (the table wrapper keeps its rounded corners when pagination is hidden). */
 .report-pagination {
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 14px;
-    min-height: 46px;
+    min-height: 50px;
+    margin-top: 10px;
     padding: 8px 14px;
     background: #ffffff;
-    border-top: 1px solid #e6ebf2;
+    border: 1px solid #e1e5ec;
+    border-radius: 12px;
     color: #526078;
     font-size: 13px;
 }
@@ -404,12 +421,18 @@
 .pagination-controls button {
     width: 32px;
     height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     border: 1px solid #e1e5ec;
     border-radius: 5px;
     background: #ffffff;
     color: #34445f;
     cursor: pointer;
+    font-family: inherit;
     font-size: 16px;
+    line-height: 1;
 }
 
 .pagination-controls button:hover:not(:disabled) {
@@ -429,12 +452,16 @@
 }
 
 .pagination-page span {
-    min-width: 30px;
-    padding: 7px;
-    text-align: center;
+    min-width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
     border: 1px solid #d7deea;
     border-radius: 5px;
     color: #1d1d1b;
+    box-sizing: border-box;
 }
 
 
@@ -442,10 +469,53 @@
    Responsive Design
 ================================ */
 
+/* 1366/1280 laptops: tighter cells so more columns fit on screen */
+@media (max-width: 1440px) {
+    .report-data-table th,
+    .report-data-table td {
+        padding: 0 10px;
+    }
+}
+
+/* Tablet and small laptop: let the search box and filters use the full row */
+@media (max-width: 1100px) {
+
+    .report-toolbar {
+        align-items: stretch;
+    }
+
+    .report-filters {
+        flex: 1 1 100%;
+    }
+
+    .report-toolbar .report-search {
+        flex: 1 1 220px;
+        width: auto;
+        min-width: 180px;
+    }
+
+    .report-toolbar .report-status-filter {
+        flex: 0 1 190px;
+    }
+
+    .report-date-filters {
+        flex: 1 1 100%;
+    }
+}
+
 @media (max-width: 800px) {
+
+    .reports-page-heading {
+        margin-bottom: 18px;
+    }
 
     .reports-grid {
         grid-template-columns: 1fr;
+    }
+
+    .report-breadcrumb {
+        flex-wrap: wrap;
+        margin-bottom: 14px;
     }
 
     .report-toolbar,
@@ -455,23 +525,86 @@
         flex-direction: column;
     }
 
+    .report-filters,
+    .report-date-filters {
+        width: 100%;
+    }
+
     .report-date-group {
         width: 100%;
     }
 
+    .report-date-group > span {
+        min-width: 36px;
+    }
+
     .report-toolbar .report-search,
     .report-toolbar .report-status-filter,
-    .report-toolbar .report-date-input,
     .report-clear-dates {
         width: 100%;
+        flex: none;
+    }
+
+    .report-toolbar .report-date-input {
+        width: 100%;
+        flex: 1;
+        min-width: 0;
     }
 
     .report-record-count {
         align-self: flex-start;
     }
 
+    /* Table scrolls sideways inside its card instead of stretching the page */
+    .report-table-wrapper {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+    }
+
+    .report-data-table th,
+    .report-data-table td {
+        padding: 0 10px;
+    }
+
     .report-pagination {
         justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+/* Phones */
+@media (max-width: 520px) {
+
+    .reports-page-heading h1 {
+        font-size: 22px;
+    }
+
+    .report-data-table {
+        font-size: 12px;
+    }
+
+    .report-data-table th {
+        height: 40px;
+        font-size: 11px;
+    }
+
+    .report-data-table td {
+        height: 42px;
+    }
+
+    .report-pagination {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .report-pagination .pagination-size,
+    .report-pagination .pagination-controls {
+        justify-content: center;
+    }
+
+    .report-pagination .pagination-controls {
         flex-wrap: wrap;
     }
 }

@@ -32,7 +32,9 @@ import java.util.stream.Collectors;
 @Controller
 public class QdsdManagerController {
 
-    private static final int PAGE_SIZE = 12;
+    private static final int DEFAULT_PAGE_SIZE = 10;
+
+    private static final List<Integer> PAGE_SIZE_OPTIONS = List.of(10, 25, 50);
 
 
     // Values produced by the download_status CASE in QdsdManagerRepository
@@ -79,7 +81,10 @@ public class QdsdManagerController {
             @RequestParam(required = false) String qdsdStatus,
             @RequestParam(required = false) String fromDate,
             @RequestParam(required = false) String toDate,
-            @RequestParam(required = false) String page) {
+            @RequestParam(required = false) String page,
+            @RequestParam(required = false) String size) {
+
+        int pageSize = parsePageSize(size);
 
         // Get logged-in user details from session
         model.addAttribute("userName", session.getAttribute("loggedInUserName"));
@@ -183,7 +188,7 @@ public class QdsdManagerController {
 
         // Calculate pagination after applying all filters
         int totalRecords = qdsdList.size();
-        int totalPages = (totalRecords + PAGE_SIZE - 1) / PAGE_SIZE;
+        int totalPages = (totalRecords + pageSize - 1) / pageSize;
 
 
         // Prevent invalid page numbers
@@ -196,8 +201,8 @@ public class QdsdManagerController {
         }
 
 
-        int start = (currentPage - 1) * PAGE_SIZE;
-        int end = Math.min(start + PAGE_SIZE, totalRecords);
+        int start = (currentPage - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalRecords);
 
 
         List<QdsdManagerResponse> paginatedList = qdsdList.subList(start, end);
@@ -208,7 +213,8 @@ public class QdsdManagerController {
         model.addAttribute("totalRecords", totalRecords);
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("totalPages", totalPages);
-        model.addAttribute("pageSize", PAGE_SIZE);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("pageSizeOptions", PAGE_SIZE_OPTIONS);
 
         model.addAttribute("searchTerm", search);
 
@@ -317,6 +323,22 @@ public class QdsdManagerController {
             return Integer.parseInt(value.trim());
         } catch (NumberFormatException exception) {
             return 1;
+        }
+    }
+
+
+    // Parse the page size; only 10, 25 and 50 are allowed, anything else uses the default
+    private int parsePageSize(String value) {
+
+        if (!hasText(value)) {
+            return DEFAULT_PAGE_SIZE;
+        }
+
+        try {
+            int parsed = Integer.parseInt(value.trim());
+            return PAGE_SIZE_OPTIONS.contains(parsed) ? parsed : DEFAULT_PAGE_SIZE;
+        } catch (NumberFormatException exception) {
+            return DEFAULT_PAGE_SIZE;
         }
     }
 
